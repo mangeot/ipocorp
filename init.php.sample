@@ -1,0 +1,52 @@
+<?php 
+	error_reporting(E_ALL);
+	
+
+	define ('RACINE_SITE',realpath(dirname(__FILE__)).'/');
+	define ('RACINE_WEB',substr($_SERVER['SCRIPT_NAME'],0,
+		strpos($_SERVER['SCRIPT_NAME'],substr($_SERVER['SCRIPT_FILENAME'],
+		strlen(RACINE_SITE)))));
+
+	define('LANG_COOKIE','LANG_COOKIE');
+	define('SEP_NOM',"#");
+	
+	define('CORPUS_SITE','%CORPUS_SITE%');
+//	define('CORPUS_SITE','/Data/Corpus/');
+	define('CORPUS_DAV','%CORPUS_DAV%');
+//	define('CORPUS_DAV','https://papillon.imag.fr/DAV/corpus');
+	define('CORPUS_WEB','%CORPUS_WEB%');
+//	define('CORPUS_WEB','http://localhost/ipocorp/Corpus');
+	define('CORPUS_SITE_PUBLIC','%CORPUS_SITE_PUBLIC%');
+//	define('CORPUS_SITE_PUBLIC','/Data/CorpusPub');
+	define('CORPUS_WEB_PUBLIC','%CORPUS_WEB_PUBLIC%');
+//	define('CORPUS_WEB_PUBLIC','http://localhost/ipocorp/Corpus');
+	
+	define('DEFAULT_TEST_USER','%DEFAULT_TEST_USER%');
+//	define('DEFAULT_TEST_USER','mangeot');
+		
+	require_once(RACINE_SITE.'include/language_negotiation.php');
+	$locale = negotiate_language();
+	$filename = 'default';
+	putenv("LANGUAGE=$locale");
+	setlocale(LC_COLLATE, $locale);
+	setlocale(LC_ALL, $locale);
+
+	if (function_exists('bindtextdomain')) {
+		bindtextdomain($filename, RACINE_SITE . 'locale');
+		bind_textdomain_codeset($filename, "UTF-8");
+		textdomain($filename);
+		define('FORMAT_DATE',gettext('FORMAT_DATE')); //d/m/Y H:i:s
+		define('FORMAT_NOMBRE_MILLE',gettext('FORMAT_NOMBRE_MILLE'));
+		define('FORMAT_NOMBRE_DECIMAL',gettext('FORMAT_NOMBRE_DECIMAL'));
+	}
+	else {
+		function gettext($msgid) {
+    		return $msgid;
+		}
+		define('FORMAT_DATE','d/m/Y H:i:s'); //d/m/Y H:i:s
+		define('FORMAT_NOMBRE_MILLE',' ');
+		define('FORMAT_NOMBRE_DECIMAL',',');
+	}
+
+	require_once(RACINE_SITE.'include/lang_'.$LANG.'.php');
+	require_once(RACINE_SITE.'include/fonctions.php');

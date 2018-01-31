@@ -1,0 +1,85 @@
+body {
+	font-family: "Lucida Grande", verdana, helvetica, sans-serif;
+}
+
+h1,h2,h3,h4 {
+	color: navy;
+	font-family: arial, sans-serif;
+}
+h1,h2 {
+	text-align: center;
+}
+#enTete {
+	background-image: url('logo-getalp-transparent-bg.png');
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+#LangForm {
+	float:right;
+}
+#partieCentrale {
+	display: table;
+	width: 100%;
+}
+
+#menuContextuel {
+	float: left;
+	width: 16%;
+}
+
+#partiePrincipale {
+	margin-left: 18%;
+}
+div {
+    /*border-style: solid;
+    border-width: 1px;*/
+    padding: 5px;
+}
+
+.odd {
+	background-color: #E5E5E5;
+}
+
+.even {
+	background-color: #D5D5D5;
+}
+
+table {
+	font-size: 1.2em;
+	margin:auto;
+	border:1px solid navy;
+ 	-moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+footer {
+	text-align:center;
+}
+
+.copyright {
+	text-align: center;
+	font-size: 0.7em;
+}
+
+a img {
+	border:none;
+}
+
+.notice {
+	background-color:  yellow;
+}
+
+.note {
+	color:  pink;
+	font-size: smaller;
+}
+
+.erreur {
+	color: #D8000C;
+	background-color: #FFBABA;
+	border: 1px solid;	
+	padding:15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-image: url('error.png');
+}

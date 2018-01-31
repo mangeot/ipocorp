@@ -1,0 +1,21 @@
+
+Installation sur MacOsX
+
+Il faut installer gettext :
+
+brew install gettext
+brew link --force gettext
+
+En fait, non, ça ne marche pas sur mon mac avec Sierra et MAMP4.3
+Ça plante méchamment sans message d'erreur.
+J'ai désactivé l'extension gettext.so et redéfini la fonction gettext().
+C'est pas très beau mais ça marche ! 
+
+
+Créer un dossier pour stocker les corpus.
+Ce dossier doit être accessible par les scripts PHP
+
+Copier le fichier init.php.sample en init.php
+Éditer le fichier init.php et indiquer le chemin vers ce dossier pour la constante CORPUS_SITE.
+
+Éditer les autres constantes en fonction de la configuration de votre site Web.
