@@ -4,7 +4,13 @@ session_start();
 $url = basename($_SERVER['SCRIPT_FILENAME']);
 $file = $_GET['filename'];
 if(isset($_GET['randval'])) {
-   	echo `tail -5 $file`;
+	$string = file_get_contents($file);
+//	$string = preg_replace('/\s/','&nbsp;',$string);
+//	$string = preg_replace('/\n/','<br/>',$string);
+   	$string = strtr($string, array("\r" => " "));
+   	echo $string;
+   	//`tail -30 $file`;
+ //  	echo file_get_contents($file);
 	die;
 }
 ?>
@@ -32,7 +38,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body style="margin:0px">
-<!--Progress bar divs-->
+<!-- Progress bar divs -->
 <div id="analyze_container">
   		<pre id="analyze_completed"></pre>
 </div>

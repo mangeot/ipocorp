@@ -5,11 +5,11 @@
 use strict;
 my $uplug = '/usr/local/bin/uplug'; 
 
-if (@ARGV< 1) {die 'usage: ajout_texte_id.pl directory'};
-my $workdir = $ARGV[0];
-my $srclang= 'fr';
-my $trglang= 'ja';
-my $link = 'link';
+if (@ARGV< 1) {die 'usage: aligne_textes.pl srclang trglang directory'};
+my $srclang = $ARGV[0];
+my $trglang = $ARGV[1];
+my $workdir = $ARGV[2];
+my $link = 'links';
 
 
 $workdir =~ s/([^\/])$/$1\//;

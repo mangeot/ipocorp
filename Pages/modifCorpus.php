@@ -1,10 +1,18 @@
 <?php
 	require_once('../init.php');
-	$Params = array();
 	$metadataFile = '';
 	if (!empty($_REQUEST['Dirname']) && !empty($_REQUEST['Name'])) {
+		if (!empty($_REQUEST['ManageTexts']) && !empty($_REQUEST['Authors']) && !empty($_REQUEST['Administrators'])) {
+//		echo '[',$_REQUEST['Dirname'],'][',$_REQUEST['Name'],']';
+//		header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name']);
+			header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name'].
+			'&Authors='.$_REQUEST['Authors'].'&Administrators='.$_REQUEST['Administrators'] .
+			'&Language1='.$_REQUEST['Language1'].'&Language2='.$_REQUEST['Language2']);
+			exit;
+		}
 		$metadataFile = CORPUS_SITE.'/'.$_REQUEST['Dirname']."/".$_REQUEST['Name'].'-metadata.xml';
 	}
+	$Params = array();
 	if (empty($_REQUEST['Enregistrer']) && file_exists($metadataFile)) {
 		$doc = new DOMDocument();
   		$doc->load($metadataFile);
@@ -38,9 +46,6 @@
 	else {
 		$Params = $_REQUEST;
 	}
-	if (!empty($_REQUEST['ManageTexts'])) {
-		header('Location:televerseCorpus.php?Dirname='.$Params['Dirname'].'&Dictname='.$Params['Name'].'&Authors='.$Params['Authors'].'&Administrators='.$Params['Administrators']);
-	}
 	include(RACINE_SITE.'include/header.php');
 ?>
 <header id="enTete">
@@ -58,15 +63,22 @@
 		$modif = in_array($user, $admins);
 		if ($modif && !empty($_REQUEST['Enregistrer']) && !empty($Params['Name'])) {
 			$Params['Dirname'] = creerCorpus($Params);
+			$metadataFile = CORPUS_SITE.'/'.$Params['Dirname']."/".$Params['Name'].'-metadata.xml';
 		}
 	}
-	
-	if (file_exists($metadataFile)) {
-		$adresseDonnees = $modif?gettext('Adresse WebDAV pour modification des données'):gettext('Adresse WebDAV pour accès aux données');
-		echo '<p>',$adresseDonnees,gettext(' : '),'<a href="',CORPUS_DAV,'/',$Params['Dirname'],'">',CORPUS_DAV,'/',$Params['Dirname'],'</a></p>';
-		if (!empty($Params['Access']) && $Params['Access'] == 'public' && file_exists(CORPUS_SITE_PUBLIC.'/'.$Params['Dirname'])) {
-			echo '<p>',gettext('Adresse Web pour accès public aux données'),gettext(' : '),'<a href="',CORPUS_WEB_PUBLIC,'/',$Params['Dirname'],'">',CORPUS_WEB_PUBLIC,'/',$Params['Dirname'],'</a></p>';
+	if (file_exists($metadataFile)) {?>
+		<form action=""><?php echo gettext('Le fichier de métadonnées du corpus a été enregistré.'); ?>
+		<input type="hidden" name="Dirname" value="<?php echo $Params['Dirname']; ?>" />
+		<input type="hidden" name="Name" value="<?php echo $Params['Name'];?>" />
+		<input type="hidden" name="Authors" value="<?php echo $Params['Authors']; ?>" />
+		<input type="hidden" name="Administrators" value="<?php echo $Params['Administrators']; ?>" />
+		<input type="hidden" name="Language1" value="<?php echo $Params['Language1']; ?>" />
+		<?php if (!empty($Params['Language2'])) {
+			echo '<input type="hidden" name="Language2" value="',$Params['Language2'],'" />';
 		}
+		 echo gettext('Vous pouvez maintenant gérer les <input type="submit" name="ManageTexts" value="textes"/>.')?>
+		</form>
+	<?php
 	}
 ?>
 <form action="?" method="post">
@@ -137,6 +149,9 @@
 		if ($modif && !empty($Params['Name']) && !empty($Params['Type'])) {
 			echo '<p style="text-align:center;"><input type="submit" name="Enregistrer" value="',gettext('Enregistrer'),'" /></p>';
 		}
+		if ($modif && !empty($metdataFile)) {
+			echo '<p style="text-align:center;"><input type="submit" name="Enregistrer" value="',gettext('Enregistrer'),'" /></p>';
+		}
 	?>
 </div>
 </fieldset>
@@ -184,6 +199,17 @@
 		}
 		else {
 			@mkdir(CORPUS_SITE.'/'.$dirname);
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT);
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT.'/'.$params['Language1']);
+			if (!empty($params['Language2'])) {
+				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT.'/'.$params['Language2']);
+			}
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML);
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Language1']);
+			if (!empty($params['Language2'])) {
+				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Language2']);
+				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.DIRLINKS);
+			}
 		}
 		if (!empty($params['Access'])) {
 			if ($params['Access'] == 'public') {
@@ -200,8 +226,6 @@
 		fclose($fh);
 		restrictAccess($dirname,$admins);
 		
-		echo '<form action="">',gettext('Le fichier de métadonnées du corpus a été enregistré.
-		Vous pouvez maintenant gérer les <input type="submit" name="ManageTexts" value="textes"/>.'),'</form>';
 		return $dirname;
 	}
 ?>

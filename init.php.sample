@@ -21,6 +21,10 @@
 	define('CORPUS_WEB_PUBLIC','%CORPUS_WEB_PUBLIC%');
 //	define('CORPUS_WEB_PUBLIC','http://localhost/ipocorp/Corpus');
 	
+	define('DIRTXT','TXT');
+	define('DIRXML','XML');
+	define('DIRLINKS','links');
+
 	define('DEFAULT_TEST_USER','%DEFAULT_TEST_USER%');
 //	define('DEFAULT_TEST_USER','mangeot');
 		
@@ -30,6 +34,8 @@
 	putenv("LANGUAGE=$locale");
 	setlocale(LC_COLLATE, $locale);
 	setlocale(LC_ALL, $locale);
+	// ajouter le path de uplug
+	putenv('PATH='.implode(PATH_SEPARATOR, array('/usr/local/bin', getenv('PATH'))));
 
 	if (function_exists('bindtextdomain')) {
 		bindtextdomain($filename, RACINE_SITE . 'locale');

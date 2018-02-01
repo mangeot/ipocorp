@@ -6,28 +6,32 @@
 		header('Location:index.php');
 	}
 	$Params = $_REQUEST;
-
+	
+	$ongoing_analysis = 0;
 	$modif = false;
 	$user=!empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
 	if (!empty($Params['Administrators'])) {
 		$admins = preg_split("/[\s,;]+/", $Params['Administrators']);
 		$modif = in_array($user, $admins);
 	}
+	
 
 	if (!empty($_REQUEST['Analysis']) && $modif) {
-//		echo RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language1'] . ' ' . CORPUS_SITE . $Params['Dirname'];
-//		exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language1'] . ' ' . CORPUS_SITE . $Params['Dirname']. '/');
-//		exec(RACINE_SITE . 'pl/ajoute_texte_id.pl ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML . '/' . $Params['Language1']);
+	// TODO supprimer le logFile qd c'est terminé
+		$logFile = tempnam(RACINE_SITE . 'data', 'analysis');
+		$ongoing_analysis = 1;
+		//exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language1'] . ' ' . CORPUS_SITE . $Params['Dirname']. ' > /dev/null &');
+		//exec(RACINE_SITE . 'pl/ajoute_texte_id.pl ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML . '/' . $Params['Language1']. ' > /dev/null &');
 		if (!empty($_REQUEST['Language2'])) {
-		echo 'echo toto > '.RACINE_SITE . 'toto.txt';
-			exec('echo toto > '.RACINE_SITE . 'toto.txt');
-			echo RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname'];
-			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname']);
-			exec(RACINE_SITE . 'pl/ajoute_texte_id.pl ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML . '/' . $Params['Language2']);
+		//	exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname'] . ' 2>&1 &', $retArr);
+			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2> $logFile &");
+		//	exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname'] . ' > /dev/null &');
+		// TODO attention, il faut ajouter les id qd c'est terminé !
+		//	exec(RACINE_SITE . 'pl/ajoute_texte_id.pl ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML . '/' . $Params['Language2']. ' > /dev/null &');
 		}
 	}
 	if (!empty($_REQUEST['Alignment']) && !empty($_REQUEST['Language2']) && $modif) {
-		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML . '/');
+		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Language1'] . ' ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. ' > /dev/null &');
 	}
 	
 	function affichep ($param, $default='') {
@@ -41,7 +45,7 @@
 <header id="enTete">
 	<?php print_lang_menu();?>
 	<h1><?php echo gettext('iPoCorp : entrepôt de corpus');?></h1>
-	<h2><?php echo gettext('Gestion des textes du corpus ');?> <?php affichep('Name');?></h3>
+	<h2><?php echo gettext('Gestion des textes du corpus ');?> <?php affichep('Name');?></h2>
 	<hr />
 </header>
 <section id="partieCentrale">
@@ -69,10 +73,16 @@
 }
 ?>
 </div>
+</fieldset>
 </form>
 <?php 
 }
-?>
+// TODO afficher correctement le nombre de mots parsés.
+   				if ($ongoing_analysis) {
+   				echo '<br/>
+   	<iframe id="analyze_frame" style="height:400px;width:100%" src="',RACINE_WEB,'include/analyze_frame.php?filename=',$logFile,'" name="analyze_frame" frameborder="0" border="0" src="" scrolling="no" scrollbar="no" > </iframe>';
+    			}
+ ?>
 </section>
 <section>
 <pre>
