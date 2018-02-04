@@ -58,3 +58,5 @@
 
 	require_once(RACINE_SITE.'include/lang_'.$LANG.'.php');
 	require_once(RACINE_SITE.'include/fonctions.php');
+        require_once(RACINE_SITE.'include/ISO-639-2to1.php');
+
