@@ -34,7 +34,7 @@ sub analyse_textes {
 	  chomp $file;
 	  my $infile = $srcdir . $file;
 	  my $analysisfile = $trgdir . $file;
-	  if ($file =~ /\.txt$/ && $file !~ /^./) {
+	  if ($file =~ /\.txt$/ && $file !~ /^\./) {
 		`mkdir -p '$trgdir'`;
 		$analysisfile =~ s/\.txt/\.xml/;
 		print STDERR "Analysis of '$infile' to '$analysisfile'\n";
@@ -52,7 +52,7 @@ sub ajoute_texte_id {
   my $file = $_[0];
   my $filename = $_[1];
   my $fileid = $filename;
-  if ($fileid =~ s/\.xml$// && $file !~ /^./) {
+  if ($fileid =~ s/\.xml$// && $file !~ /^\./) {
   	$fileid =~ s/ //g;
 	if ($fileid =~ /^[\-.0-9]/) {
 		$fileid = 't'.$fileid;
