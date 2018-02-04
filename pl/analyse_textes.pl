@@ -11,7 +11,7 @@ my $tmpdir = tempdir( CLEANUP => 1 );
 
 if (@ARGV< 1) {die 'usage: analyse_textes.pl lang lg directory'};
 my $lang    = $ARGV[0];  # source language
-my $lang    = $ARGV[1];  # source language
+my $lg    = $ARGV[1];  # source language
 my $workdir = $ARGV[2];
 my $xmldir = 'XML';
 my $txtdir= 'TXT';
