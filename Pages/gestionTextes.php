@@ -32,7 +32,7 @@
 	if (!empty($_REQUEST['Alignment']) && !empty($_REQUEST['Language2']) && $modif) {
 		$logFile = tempnam(RACINE_SITE . 'data', 'alignment');
 		$ongoing_analysis = 1;
-		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Language1'] . ' ' . $Params['Language2'] . ' ' . $sr . ' ' . $tr . '' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");
+		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Language1'] . ' ' . $Params['Language2'] . ' ' . $sr . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");
 	}
 	
 	function affichep ($param, $default='') {

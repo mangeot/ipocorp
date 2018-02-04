@@ -37,8 +37,9 @@ sub analyse_textes {
 	  if ($file =~ /\.txt$/ && $file !~ /^\./) {
 		`mkdir -p '$trgdir'`;
 		$analysisfile =~ s/\.txt/\.xml/;
+		$file =~ s/\.txt/\.xml/;
 		print STDERR "Analysis of '$infile' to '$analysisfile'\n";
-		`$uplug pre/$lg\-all-mathieu -in '$infile' -out '$analysisfile'`;
+		`$uplug pre/$lg\-all -in '$infile' -out '$analysisfile'`;
 		print STDERR "Add text id in $analysisfile\n";
 		&ajoute_texte_id($analysisfile, $file);
 	  }
@@ -50,11 +51,10 @@ sub analyse_textes {
 
 sub ajoute_texte_id {
   my $file = $_[0];
-  my $filename = $_[1];
-  my $fileid = $filename;
-  if ($fileid =~ s/\.xml$// && $file !~ /^\./) {
+  my $fileid = $_[1];
+  if ($fileid =~ s/\.xml$// && $fileid !~ /^\./) {
   	$fileid =~ s/ //g;
-	if ($fileid =~ /^[\-.0-9]/) {
+	if ($fileid =~ /^[\-\.0-9]/) {
 		$fileid = 't'.$fileid;
 	}
 	my ($tmpfh, $tmpfilename) = tempfile( DIR => $tmpdir );
@@ -68,7 +68,6 @@ sub ajoute_texte_id {
 	} 
 	close $tmpfh;
 	close $input_fh;
-	print STDERR "move $tmpfilename $file\n";
 	move($tmpfilename,$file);
   }
 }

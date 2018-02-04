@@ -24,7 +24,7 @@ if(isset($_GET['randval'])) {
 	}
 	else {
    		$string = `tail -25 $file`;
-   		preg_replace('/\r/',' ',$string);
+   		$string = preg_replace('/\r/',' ',$string);
    		echo $string;
    	}
 	die;

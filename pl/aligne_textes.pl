@@ -8,7 +8,9 @@ my $uplug = '/usr/local/bin/uplug';
 if (@ARGV< 1) {die 'usage: aligne_textes.pl srclang trglang sr tr directory'};
 my $srclang = $ARGV[0];
 my $trglang = $ARGV[1];
-my $workdir = $ARGV[2];
+my $sr = $ARGV[2];
+my $tr = $ARGV[3];
+my $workdir = $ARGV[4];
 my $link = 'links';
 
 $workdir =~ s/([^\/])$/$1\//;
@@ -34,7 +36,7 @@ sub aligne_textes {
 	  if ($file =~ /\.xml$/) {
 		$linkfile =~ s/.xml/_$srclang\_$trglang.xml/;
 		print STDERR "align '$srcfile' with '$trgfile'\n";
-		`$uplug align/hun -dic $srclang-$trglang.dic -src '$srcfile' -trg '$trgfile' > '$linkfile'`;
+		`$uplug align/hun -dic $sr-$tr.dic -src '$srcfile' -trg '$trgfile' > '$linkfile'`;
 	  }
 	  elsif ($file !~ /^\./ && -d $srcdir . $file) {
 	  		&aligne_textes($srcfile . '/', $trgfile . '/',$linkfile.'/');
