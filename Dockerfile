@@ -39,11 +39,10 @@ RUN ln -s $DICTIONNAIRES_SITE $DICTIONNAIRES_SITE_DAV
 
 RUN chown -R www-data:www-data $DICTIONNAIRES_SITE $DICTIONNAIRES_SITE_DAV $DICTIONNAIRES_SITE_PUBLIC
 
-# There is a bug in the openjdk-8-jre install. It stops if the man directory does not exist.
 RUN mkdir -p /usr/share/man/man1 \
    && apt-get update && apt-get install -y libexpat1-dev \
       locales \ 
-      openjdk-8-jre
+	  tree
 
 RUN echo 'fr_FR.UTF-8 UTF-8' >> /etc/locale.gen \
    && echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen \
@@ -72,15 +71,14 @@ RUN htpasswd -cb /etc/apache2/webdav.htpasswd $ADMIN_USER $ADMIN_PASSWORD
 RUN /usr/sbin/a2enmod dav dav_fs dav_lock
 
 # install MElt tagger https://gforge.inria.fr/frs/download.php/file/36209/melt-2.0b12.tar.gz
-RUN wget https://gforge.inria.fr/frs/download.php/file/36209/melt-2.0b12.tar.gz && 
-	tar zxvf melt-2.0b12.tar.gz
+# RUN wget https://gforge.inria.fr/frs/download.php/file/36209/melt-2.0b12.tar.gz && \\
+#	tar zxvf melt-2.0b12.tar.gz
 	
-WORKDIR melt-2.0b12
+# WORKDIR melt-2.0b12
 
 RUN	aclocal && autoconf && automake -a && ./configure && make && make install
 
 # install mecab
-#RUN wget https://mecab.googlecode.com/files/mecab-0.996.tar.gz &&
 RUN git clone https://github.com/taku910/mecab.git
 	
 WORKDIR mecab

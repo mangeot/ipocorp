@@ -3,8 +3,6 @@
 	$metadataFile = '';
 	if (!empty($_REQUEST['Dirname']) && !empty($_REQUEST['Name'])) {
 		if (!empty($_REQUEST['ManageTexts']) && !empty($_REQUEST['Authors']) && !empty($_REQUEST['Administrators'])) {
-//		echo '[',$_REQUEST['Dirname'],'][',$_REQUEST['Name'],']';
-//		header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name']);
 			header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name'].
 			'&Authors='.$_REQUEST['Authors'].'&Administrators='.$_REQUEST['Administrators'] .
 			'&Language1='.$_REQUEST['Language1'].'&Language2='.$_REQUEST['Language2']);
@@ -24,8 +22,15 @@
   		$Params['Owner'] = $dict->getAttribute('owner');
   		$Params['Category'] = $dict->getAttribute('category');
   		$Params['Type'] = $dict->getAttribute('type');
+  		$Params['Pairs'] = $dict->getAttribute('pairs');
   		$Params['Language1'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('d:lang');
+  		$Params['SourceTexts'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('texts');
+  		$Params['SourceWords'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('words');
+  		$Params['SourceSentences'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('sentences');
   		$Params['Language2'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('d:lang');
+  		$Params['TargetTexts'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('texts');
+  		$Params['TargetWords'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('words');
+  		$Params['TargetSentences'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('sentences');
   		$Params['CreationDate'] = $dict->getAttribute('creation-date');
   		$Params['InstallationDate'] = $dict->getAttribute('installation-date');
   		$Params['Contents'] = $dict->getElementsByTagName('contents')->item(0)->nodeValue;
@@ -45,7 +50,52 @@
   	}
 	else {
 		$Params = $_REQUEST;
+		if (empty($Params['Pairs'])) {
+			$Params['Pairs'] = 0;
+		}
+		if (empty($Params['SourceTexts'])) {
+			$Params['SourceTexts'] = 0;
+		}
+		if (empty($Params['SourceWords'])) {
+			$Params['SourceWords'] = 0;
+		}
+		if (empty($Params['SourceSentences'])) {
+			$Params['SourceSentences'] = 0;
+		}
+		if (empty($Params['TargetTexts'])) {
+			$Params['TargetTexts'] = 0;
+		}
+		if (empty($Params['TargetWords'])) {
+			$Params['TargetWords'] = 0;
+		}
+		if (empty($Params['TargetSentences'])) {
+			$Params['TargetSentences'] = 0;
+		}
 	}
+	
+	if (!empty($_REQUEST['CompterTextes'])) {
+		$dirtxt = CORPUS_SITE . $Params['Dirname'] . '/' . DIRTXT;
+		$dirsrc = $dirtxt . '/' . $Params['Language1'];
+		$Params['SourceTexts'] = trim(`ls -1 $dirsrc/* | grep '.txt' | wc -l`);
+		$dirtrg = $dirtxt . '/' . $Params['Language2'];
+		$Params['TargetTexts']  = trim(`ls -1 $dirtrg/* | grep '.txt' | wc -l`);
+	}
+	if (!empty($_REQUEST['CompterPhrases'])) {
+		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
+		$dirsrc = $dirxml . '/' . $Params['Language1'];
+		$Params['SourceWords'] = trim(`grep -R '<w ' $dirsrc/* | wc -l`);
+		$Params['SourceSentences'] = trim(`grep -R '<s ' $dirsrc/* | wc -l`);		
+		$dirtrg = $dirxml . '/' . $Params['Language2'];		
+		$Params['TargetWords'] = trim(`grep -R '<w ' $dirtrg/* | wc -l`);
+		$Params['TargetSentences'] = trim(`grep -R '<s ' $dirtrg/* | wc -l`);
+	}	
+	if (!empty($_REQUEST['CompterLiens'])) {
+		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
+		$dirlinks = $dirxml . '/' . DIRLINKS;
+		$Params['Pairs'] = trim(`grep -R '<link ' $dirlinks/* | wc -l`);
+	}
+
+	
 	include(RACINE_SITE.'include/header.php');
 ?>
 <header id="enTete">
@@ -61,7 +111,7 @@
 	if (!empty($Params['Administrators'])) {
 		$admins = preg_split("/[\s,;]+/", $Params['Administrators']);
 		$modif = in_array($user, $admins);
-		if ($modif && !empty($_REQUEST['Enregistrer']) && !empty($Params['Name'])) {
+		if ($modif && !empty($Params['Name']) && (!empty($_REQUEST['Enregistrer']) || !empty($_REQUEST['CompterTextes']) || !empty($_REQUEST['CompterPhrases']) || !empty($_REQUEST['CompterLiens']))) {
 			$Params['Dirname'] = creerCorpus($Params);
 			$metadataFile = CORPUS_SITE.'/'.$Params['Dirname']."/".$Params['Name'].'-metadata.xml';
 		}
@@ -86,7 +136,7 @@
 <legend><?php echo gettext('Gestion d\'un corpus');?></legend>
 <div>
 	<p>*<?php echo gettext('Nom complet'); echo gettext(' : ');?><input type="text" required="required" size="50" id="NameC" name="NameC" value="<?php affichep('NameC')?>" /></p>
-	<p>*<?php echo gettext('Nom abrégé'); echo gettext(' : ');?><input type="text" required="required"  pattern="[A-Z][a-zA-Z0-9\-]+"  id="Name" name="Name" onfocus="copyifempty(this,'NameC');" value="<?php affichep('Name')?>"/> <?php echo gettext('Le nom doit commencer par une majuscule. Caractères ASCII alphanumériques et tiret uniquement !');?>  [A-Z][a-zA-Z0-9\-]+</p>
+	<p>*<?php echo gettext('Nom abrégé'); echo gettext(' : ');?><input type="text" required="required"  pattern="[A-Z0-9][a-zA-Z0-9\-]+"  id="Name" name="Name" onfocus="copyifempty(this,'NameC');" value="<?php affichep('Name')?>"/> <?php echo gettext('Le nom doit commencer par une majuscule ou un chiffre. Caractères ASCII alphanumériques et tiret uniquement !');?>  [A-Z0-9][a-zA-Z0-9\-]+</p>
 	<p><?php echo gettext('Propriétaire'); echo gettext(' : ');?><input type="text" id="Owner"  onfocus="copyifempty(this,'Name');" name="Owner"  value="<?php affichep('Owner')?>"/></p>
 	<p>*<?php echo gettext('Catégorie'); echo gettext(' : ');?><select id="Category"  required="required" name="Category" onchange="this.form.submit()">
 		<option value=""><?php echo gettext('choisir...');?></option>
@@ -106,20 +156,51 @@
 			</p>';
 	}
 	?>
+	
 	<p><?php echo gettext('Langue source'),gettext(' : ');?>
 		<select name="Language1" onchange="this.form.submit()">
 			<option value=""><?php echo gettext('Choisir...');?></option>
 		<?php afficheLanguesOptions($Params['Language1']); ?>
 		</select></p>
-	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') {
-		echo gettext('Langue cible'),gettext(' : ');?>
+	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') { ?>
+		<p><?php echo gettext('Langue cible'),gettext(' : ');?>
 		<select name="Language2" onchange="this.form.submit()">
 			<option value=""><?php echo gettext('Choisir...');?></option>
 			<?php afficheLanguesOptions($Params['Language2']); ?>
 		</select></p>
-	<?php 
-	}
-	?>
+	<?php } ?>
+
+	<p><?php echo gettext('Textes source'),gettext(' : ');?>
+		<input type="text" name="SourceTexts" value="<?php echo $Params['SourceTexts']; ?>" />
+	</p>
+	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') { ?>
+	<p><?php echo gettext('Textes cible'),gettext(' : ');?>
+		<input type="text" name="TargetTexts" value="<?php echo $Params['TargetTexts']; ?>" />
+		<input type="submit" name="CompterTextes" value="<?php echo gettext('Recompter'); ?>" />
+	</p>
+	<?php } ?>
+	<p><?php echo gettext('Mots source'),gettext(' : ');?>
+		<input type="text" name="SourceWords" value="<?php echo $Params['SourceWords']; ?>" />
+	</p>
+	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') { ?>
+	<p><?php echo gettext('Mots cible'),gettext(' : ');?>
+		<input type="text" name="TargetWords" value="<?php echo $Params['TargetWords']; ?>" />
+	</p>
+	<?php } ?>
+	<p><?php echo gettext('Phrases source'),gettext(' : ');?>
+		<input type="text" name="SourceSentences" value="<?php echo $Params['SourceSentences']; ?>" />
+	</p>
+	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') { ?>
+	<p><?php echo gettext('Phrases cible'),gettext(' : ');?>
+		<input type="text" name="TargetSentences" value="<?php echo $Params['TargetSentences']; ?>" />
+		<input type="submit" name="CompterPhrases" value="<?php echo gettext('Recompter'); ?>" />
+	</p>
+	<p><?php echo gettext('Phrases alignées'),gettext(' : ');?>
+		<input type="text" name="Pairs" value="<?php echo $Params['Pairs']; ?>" />
+		<input type="submit" name="CompterLiens" value="<?php echo gettext('Recompter'); ?>" />
+	</p>
+	<?php } ?>
+
 
 	<p><?php echo gettext('Contenu');?> <input type="text" id="Contents" name="Contents" value="<?php affichep('Contents','vocabulaire général');?>" /></p>	
 	<p><?php echo gettext('Domaine');?> <input type="text" id="Domain" name="Domain" value="<?php affichep('Domain','général');?>"/></p>	
@@ -169,20 +250,10 @@
 		echo '>';
 	}
 			
-	function afficheLanguesOptions($option) {
-		global $LANGUES;
-		asort($LANGUES,SORT_LOCALE_STRING);
-		foreach ($LANGUES as $key => $val) {
-    		echo "<option value='" . $key . "'";
-    		if ($key==$option) {echo ' selected="selected" ';}
-    		echo ">" . $val . "</option>\n";
-		}
-	}
-	
 	function creerCorpus($params) {
 		$admins = preg_split("/[\s,;]+/", $params['Administrators']);		
 		$name = $params['Name'];
-		if (!preg_match('/^[A-Z][a-zA-Z0-9\-]+$/',$name)) {
+		if (!preg_match('/^[A-Z0-9][a-zA-Z0-9\-]+$/',$name)) {
 			echo '<p class="erreur">',gettext('Le nom abrégé du dictionnaire contient des caractères non autorisés !'),'</p>';
 			return '';
 		}

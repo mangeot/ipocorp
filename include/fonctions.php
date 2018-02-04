@@ -1,55 +1,7 @@
 <?php
-
-	$CDMElements = array(
-	'cdm-volume' => array('*'.gettext('Volume'),'/volume',''),
-	'cdm-entry' => array('*'.gettext('Article'),'/volume/entry',''),
-	'cdm-entry-id' => array('*'.gettext('Identifiant unique de l\'article'),'/volume/entry/@id',gettext('valeur éventuellement vide')),
-	'cdm-headword' => array('*'.gettext('Mot-vedette'),'/volume/entry/headword/text()',''),
-	'cdm-homograph-number' => array(gettext('Numéro d\'homographe'),'/volume/entry/headword/@hn',''),
-	'cdm-headword-variant' => array(gettext('Variante'),'/volume/entry/variant/text()',''),
-	'cdm-writing' => array(gettext('Transcription'),'/volume/entry/transcription/text()',gettext('ex : romaji, pinyin')),
-	'cdm-reading' => array(gettext('Lecture'),'/volume/entry/reading/text()',gettext('ex : yomigana')),
-	'cdm-pronunciation' => array(gettext('Prononciation'),'/volume/entry/pron/text()',gettext('en API si possible')),
-	'cdm-pos' => array(gettext('Classe grammaticale'),'/volume/entry/pos/text()',''),
-	'cdm-domain' => array(gettext('Domaine'),'/volume/entry/domain/text()',''),
-	'cdm-definition' => array(gettext('Définition'),'/volume/entry/definition/text()',gettext('non indexé')),
-	'cdm-sense-block' => array(gettext('Bloc de sens'),'/volume/entry/senses',gettext('non indexé')),
-	'cdm-sense' => array(gettext('Sens'),'/volume/entry/senses/sense',gettext('non indexé')),
-	'cdm-translation' => array(gettext('Traduction en '),'/volume/entry/translation/text()',''),
-	'cdm-example-block' => array(gettext('Bloc d\'exemples'),'/volume/entry/examples',''),
-	'cdm-example' => array(gettext('Exemple en '),'/volume/entry/examples/example/text()',''),
-	'cdm-idiom' => array(gettext('Expression idiomatique en '),'/volume/entry/idioms/idiom/text()','')
-	);
-	
-	$CDMLinkInfo = array(
-		'name' => array('*'.gettext('Nom'),''),
-		'volume' => array('*'.gettext('Volume cible'),''),
-		'xpath' => array('*'.gettext('XPath du lien'),gettext('XPath de l\'élément')),
-		'value' => array('*'.gettext('XPath de la valeur du lien'),gettext('Chemin relatif à l\'élément')),
-		'type' => array('*'.gettext('XPath du type du lien'),gettext('Valeur "final" vers une entrée, et "axi" vers une axie')),
-		'lang' => array('*'.gettext('XPath de la langue de la cible'),''),
-		'label' => array(gettext('XPath de l\'étiquette du lien'),gettext('Valeur libre')),
-		'weight' => array(gettext('XPath du poids du lien'),gettext('Entier ou réel'))
-	);
-
-	$CDMLink = array(
-		'name' => 'translation',
-		'volume' => 'target-volume-name',
-		'xpath' => '/volume/entry/translation-ref',
-		'value' => '@id',
-		'type' => '@type',
-		'lang' => '@lang',
-		'label' => '@label',
-		'weight' => '@weight'
-	);
-
 	
 	define ('DML_PREFIX','http://www-clips.imag.fr/geta/services/dml');
 	define ('XLINK_PREFIX','http://www.w3.org/1999/xlink');
-	define ('DefaultResultFormatter','');
-	define ('DefaultResultPostUpdateProcessor','');
-	//define ('DefaultResultFormatter','fr.imag.clips.papillon.business.motamot.MotamotFormatter');
-	//define ('DefaultResultPostUpdateProcessor','fr.imag.clips.papillon.business.motamot.MotamotPostUpdateProcessor');
 	
 	function creerCorpusMetadata($params) {
 		$res = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -66,13 +18,14 @@
    last-modification-date="'.date('c').'" 
    fullname="'.htmlspecialchars($params['NameC']).'"
    name="'.$params['Name'].'" 
-   owner="'.$params['Owner'].'" 
+   owner="'.$params['Owner'].'"
+   pairs="'.$params['Pairs'].'"
    type="'.$params['Type'].'"> 
  <languages>
- 	 <source-language d:lang="'.$params['Language1'].'"/>
+ 	 <source-language texts="'.$params['SourceTexts'].'"  words="'.$params['SourceWords'].'" sentences="'.$params['SourceSentences'].'" d:lang="'.$params['Language1'].'"/>
 ';
  	if (!empty($params['Language2'])) {
- 		$res .= ' 	 <target-language d:lang="'.$params['Language2'].'"/>
+ 		$res .= ' 	 <target-language texts="'.$params['TargetTexts'].'" words="'.$params['TargetWords'].'" sentences="'.$params['TargetSentences'].'"  d:lang="'.$params['Language2'].'"/>
 ';
  	}
  	$res .=' </languages>
@@ -97,248 +50,166 @@
 		return $res;
 	}
 		
+	function parseCorpus($corpus) {
+		$infos = array();
+		$doc = new DOMDocument();
+		$doc->load($corpus);
+		$corpora = $doc->getElementsByTagName("corpus-metadata");
+		$corp = $corpora->item(0);
+  		$infos['NameC'] = $corp->getAttribute('fullname');
+  		$infos['Name'] = $corp->getAttribute('name');
+  		$infos['Owner'] = $corp->getAttribute('owner');
+  		$infos['Category'] = $corp->getAttribute('category');
+  		$infos['Type'] = $corp->getAttribute('type');
+  		$infos['CreationDate'] = $corp->getAttribute('creation-date');
+  		$infos['InstallationDate'] = $corp->getAttribute('installation-date');
+  		$infos['Category'] = $corp->getAttribute('category');
+  		$infos['Type'] = $corp->getAttribute('type');
+  		$infos['Pairs'] = $corp->getAttribute('pairs');
+  		$infos['Contents'] = $corp->getElementsByTagName('contents')->item(0)->nodeValue;
+  		$infos['Domain'] = $corp->getElementsByTagName('domain')->item(0)->nodeValue;
+  		if (empty($infos['Domain'])) {echo 'domaine vide : ',$dico;}
+  		$infos['Source'] = $corp->getElementsByTagName('source')->item(0)->nodeValue;
+  		$infos['Authors'] = $corp->getElementsByTagName('authors')->item(0)->nodeValue;
+  		//if (empty($infos['Authors'])) {echo 'auteurs vides : ',$dico;}
+  		$infos['Legal'] = $corp->getElementsByTagName('legal')->item(0)->nodeValue;
+  		$tmp = $corp->getElementsByTagName('comments');
+  		if ($tmp->length>0) {$infos['Comments'] = $tmp->item(0)->nodeValue;}
+  		$tmp = $corp->getElementsByTagName('Reference');
+  		if ($tmp->length>0) {$infos['Reference'] = $tmp->item(0)->nodeValue;}
+  		$adminNodes = $corp->getElementsByTagName('user-ref');
+  		$admins = array();
+  		foreach ($adminNodes as $admin) {
+  			array_push($admins,$admin->getAttribute('name'));
+  		}
+		$infos['Administrators'] = $admins; 
+  		$infos['Source'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('d:lang');
+  		$infos['SourceTexts'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('texts');
+  		$infos['SourceWords'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('words');
+  		$infos['SourceSentences'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('sentences');
+  		$infos['Target'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('d:lang');
+  		$infos['TargetTexts'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('texts');
+  		$infos['TargetWords'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('words');
+  		$infos['TargetSentences'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('sentences');
+		return($infos);
+	}
 	
-	function enregistrerVolumeMetadata($params) {
-		if (empty($params['Format'])) {
-			$params['Format'] = '';
-		}
-		if (empty($params['HwNumber'])) {
-			$params['HwNumber'] = '';
-		}
-		if (empty($params['Encoding'])) {
-			$params['Encoding'] = '';
-		}
-		if (empty($params['CreationDate'])) {
-			$params['CreationDate'] = date('c');
-		}
-		if (empty($params['InstallationDate'])) {
-			$params['InstallationDate'] = date('c');
-		}
-		$source = $params['Source'];
-		$targets = $params['Targets'];
-		$targets = array_filter(explode(' ',$targets));
-		$langs = $targets;
-		array_push($langs,$source);
-		sort($langs,SORT_LOCALE_STRING);
-		$name = $params['Name'];
-		$dbname = preg_replace('/[_\-]/','',strtolower($name));
-		$dataFileName = strtolower($name);
-		$templateFileName = $dataFileName . '-template.xml';
-		$dataFileName .= '.'.$params['Format'];
-		if (empty($params['Comments'])) {$params['Comments']='';}
+	function creerCollectionMetadata($name, $src, $trg, $corpora, $adminstring) {
 		$res = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<volume-metadata
-   xmlns="http://www-clips.imag.fr/geta/services/dml" 
-   xmlns:d="http://www-clips.imag.fr/geta/services/dml"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
+<collection-metadata
+   xmlns="http://www-clips.imag.fr/geta/services/dml"
+   xmlns:d="http://www-clips.imag.fr/geta/services/dml" 
+   xmlns:xlink="http://www.w3.org/1999/xlink" 
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www-clips.imag.fr/geta/services/dml
    http://www-clips.imag.fr/geta/services/dml/dml.xsd"
-   location="local"
-   creation-date="'.$params['CreationDate'].'" 
-   installation-date="'.$params['InstallationDate'].'" 
+   creation-date="'.date('c').'" 
+   installation-date="'.date('c').'" 
    last-modification-date="'.date('c').'" 
-   hw-number="'.$params['HwNumber'].'" 
-   encoding="'.$params['Encoding'].'" 
-   format="'.$params['Format'].'" 
-   name="'.$name.'"
-   dbname="'.$dbname.'" 
-   version="1"
-   source-language="'.$source.'"
-   target-languages="'.$params['Targets'].'"
-   reverse-lookup="false">
- <authors>'.$params['Authors'].'</authors>
- <comments>'.htmlspecialchars($params['Comments']).'</comments>
- <cdm-elements>
-  ';
-  global $CDMElements;
-  $keys=  '|'.join("|", array_keys($params)).'|';
-  foreach ($CDMElements as $nom => $element) {
-  	if (!empty($params[$nom])) {
-  		$valeur = preg_replace('/\/$/','',$params[$nom]);
-  		$res .= '<'.$nom.' xpath="'.$valeur.'"/>'."\n";
-  	}
-  	else if (preg_match('/|'.$nom.'_[a-z][a-z][a-z]|/',$keys)) {
-	  foreach($langs as $lang) {
-		if (!empty($params[$nom.'_'.$lang])) {
-  			$valeur = preg_replace('/\/$/','',$params[$nom.'_'.$lang]);
-  			$valeur = preg_replace('/"/','\'',$valeur);
-			$res .= '<'.$nom.' xpath="'.$valeur.'"';
-			$res .= ' d:lang="'.$lang.'" />'."\n  ";
-		  }
-      }
-    }
-  }
-  if (!empty($params['CDMFreeElementsName'])) {
-  	$i=0;
-  	foreach ($params['CDMFreeElementsName'] as $nom) {
-  		$valeur = $params['CDMFreeElementsValue'][$i++];
-  		$valeur = preg_replace('/\/$/','',$valeur);
-  		if (!empty($nom) && !empty($valeur)) {
-  	  		$res .= '<'.$nom.' xpath="'.$valeur.'" index="true"  />	
-  		';} 
-  	}
-  }
-  $res .= '<links>
-  ';
-  if (!empty($params['CDMLinks'])) {
-  	foreach ($params['CDMLinks'] as $link) {
-  		if (!empty($link['name']) && !empty($link['xpath'])) {
-  		$valeur = preg_replace('/\/$/','',$link['xpath']);
-  		$res .= '<link name="'.$link['name'].'" xpath="'.$link['xpath'].'">
-  		';
-  		 foreach ($link as $name => $value) {
-  		 	if ($name != 'name' && $name != 'xpath') {
-  		 		if (!empty($link[$name])) {
-				$res .='<'.$name.' xpath="'.$link[$name].'"/>
-  ';  		 	
-  		 		}
-  			}
-  		}
-  		  $res .= '</link>
-  		';
-  		}
-	}
-  }
-  $res .= '</links>
-	';  
- 
- $res .= '</cdm-elements>
-<administrators>';
-	$admins = preg_split("/[\s,;]+/", $params['Administrators']);
+   name="'.$name.'"> 
+ <languages>
+ 	 <source-language d:lang="'.$src.'"/>
+';
+ 	if (!empty($trg)) {
+ 		$res .= ' 	 <target-language d:lang="'.$trg.'"/>
+';
+ 	}
+ 	$res .=' </languages>
+ <corpora>
+';
+ 	foreach ($corpora as $corpus) {
+ 		$res .= '      <corpus name="'.$corpus.'"/>
+';
+ 	}
+ 	$res .=' </corpora>
+  <administrators>';
+	$admins = preg_split("/[\s,;]+/", $adminstring);
 	foreach ($admins as $admin) {
 		  $res .= '
 		  <user-ref name="'.$admin.'"/>';
 	}
  $res .= '
  </administrators>
- <volume-ref xlink:href="'.$dataFileName.'" source-language="'.$source.'"/>
- ';
- if (!empty($params['XmlschemaRef'])) {
- 	$res .= '<xmlschema-ref xlink:href="'.$params['XmlschemaRef'].'"/>
-';}
- if ($params['Format']=='xml') {
- 	$res .= '<template-entry-ref xlink:href="'.$templateFileName.'"/>
-';}
- if (!empty($params['TemplateInterfaceRef'])) {
- 	$res .= '<template-interface-ref xlink:href="'.$params['TemplateInterfaceRef'].'"/>
-';}
-  if (!empty($params['XslStylesheet'])) {
- 	foreach ($params['XslStylesheet'] as $xsl) {
-		$default = $xsl==$params['Name']?' default="true"':'';
- 		$res.='<xsl-stylesheet name="'.$xsl.'"'.$default.' xlink:href="'.$xsl.'-view.xsl"/>
- 	';}
- }
-
- $res .= '</volume-metadata>
+</collection-metadata>
 ';
 		return $res;
 	}
-	
-	function getNumTexts($params) {
-		$res = 1;
-		foreach($params as $key=>$val) { 
-   			if(substr($key,0,4) == 'Text') { 
-   				$tmp = intval(substr($key,4));
-   				if ($tmp > $res) {
-   					$res = $tmp;
-   				}
-   			}
-		}
-		return $res;
-	}
-	
-	function getNumCibles($params, $vol) {
-		$res = 0;
-		$match = 'Volume'.$vol.'Target';
-		foreach($params as $key=>$val) { 
-   			if(substr($key,0,strlen($match)) == $match) { 
-   				$tmp = intval(substr($key,strlen($match)));
-   				if ($tmp > $res) {
-   					$res = $tmp;
-   				}
-   			}
-		}
-		return $res;
-	}
-	
-	function recupCiblesVolume($params, $vol) {
-	  	$nbcibles = getNumCibles($params,$vol);
-  		$targets = '';
-  		for ($j=1;$j<=$nbcibles;$j++) {
-  			$target = $params['Volume'.$vol.'Target'.$j];
-  			$targets .= $target . ' ';
+
+	function parseCollection($collection) {
+		global $ISO6392TO1;
+		$infos = array();
+		$doc = new DOMDocument();
+		$doc->load($collection);
+		$corpora = $doc->getElementsByTagName("collection-metadata");
+		$corp = $corpora->item(0);
+  		$infos['Name'] = $corp->getAttribute('name');
+  		$infos['CreationDate'] = $corp->getAttribute('creation-date');
+  		$infos['InstallationDate'] = $corp->getAttribute('installation-date');
+  		$admins = array();
+  		$adminNodes = $corp->getElementsByTagName('user-ref');
+  		foreach ($adminNodes as $admin) {
+  			array_push($admins,$admin->getAttribute('name'));
   		}
-  		$targets = substr($targets,0,strlen($targets)-1);
-		return $targets;
+		$infos['Administrators'] = $admins; 
+  		$corpora = array();
+  		$corporaNodes = $corp->getElementsByTagName('corpus');
+  		foreach ($corporaNodes as $corpus) {
+  			array_push($corpora,$corpus->getAttribute('name'));
+  		}
+		$infos['Corpora'] = $corpora; 
+  		$infos['Source'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('d:lang');
+  		$infos['Target'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('d:lang');
+  		$infos['sr'] = $ISO6392TO1[$infos['Source']];
+  		$infos['tr'] = $ISO6392TO1[$infos['Target']];
+		return($infos);
 	}
-
-	function createXslStylesheet($name, $entry, $id, $headword, $pron, $pos, $example, $idiom, $sense, $template) {
-		$entry = substr($entry,strrpos($entry,'/')+1);
-		$id = empty($id)?'':substr($id,strrpos($id,'/')+1);
-		if (preg_match('/text\(\)$/',$headword)) {
-			$headword = substr($headword,0,strrpos($headword,'/'));
-		}
-		$headword = substr($headword,strrpos($headword,'/')+1);
-		if (preg_match('/text\(\)$/',$pron)) {
-			$pron = substr($pron,0,strrpos($pron,'/'));
-		}
-		$pron = empty($pron)?'':substr($pron,strrpos($pron,'/')+1);
-		if (preg_match('/text\(\)$/',$pos)) {
-			$pos = substr($pos,0,strrpos($pos,'/'));
-		}
-		$pos = empty($pos)?'':substr($pos,strrpos($pos,'/')+1);
-		if (preg_match('/text\(\)$/',$example)) {
-			$example = substr($example,0,strrpos($example,'/'));
-		}
-		$example = empty($example)?'':substr($example,strrpos($example,'/')+1);
-		if (preg_match('/text\(\)$/',$idiom)) {
-			$idiom = substr($idiom,0,strrpos($idiom,'/'));
-		}
-		$idiom = empty($idiom)?'':substr($idiom,strrpos($idiom,'/')+1);
-
-		$sense = empty($sense)?'':substr($sense,strrpos($sense,'/')+1);
-		
-		$templatexml = simplexml_load_string($template);
-		$templatenamespaces = $templatexml->getDocNamespaces();
-		
-		$stylesheet = file_get_contents(RACINE_SITE.'include/default-view.xsl');
-
-		$stylesheetxml = simplexml_load_string($stylesheet);
-		$stylesheetnamespaces = $stylesheetxml->getDocNamespaces();
-		$namespacesdiff = array_diff_assoc($templatenamespaces, $stylesheetnamespaces);
-		
-		if (count($namespacesdiff) >0) {
-			foreach ($namespacesdiff as $nsprefix => $namespace) {
-				$stylesheetxml->addAttribute("xmlns:xmlns:".$nsprefix, $namespace);
+	
+	function getCorpora() {
+		$corpora = array();
+	# initialise la liste des corpus
+		if (is_dir(CORPUS_SITE) && $dh = opendir(CORPUS_SITE)) {
+			while (($file = readdir($dh)) !== false) {
+				if (filetype(CORPUS_SITE . '/'.$file)=='dir'
+					&& substr($file,0,1)!== '.'
+					&& strpos($file,'_')>0) {
+					$souligne = strpos($file,'_');
+					$nom = substr($file,0,$souligne);
+					$corpus = CORPUS_SITE . '/'. $file . '/' . $nom . '-metadata.xml';
+					if (file_exists($corpus)) {
+						$infos = parseCorpus($corpus);
+						$infos['Dirname']= $file;
+						$corpora[$infos['Name']] = $infos;
+					}
+					else {
+						echo '<p class="erreur">',gettext('Le corpus suivant n\'a pas de métadonnées : '),$nom,'</p>';
+					}
+				}
 			}
-			$stylesheet =$stylesheetxml->asXML();
+			closedir($dh);
 		}
+		ksort($corpora,SORT_LOCALE_STRING);
+		return $corpora;
+    }
+    
+    function getCollections() {
+    	$collectiondir = CORPUS_SITE.DIRCOLLECTIONS;
+		$collections = array();
+		if ($dh = opendir($collectiondir)) {
+			while (($file = readdir($dh)) !== false) {
+				$metafile = $collectiondir . '/'.$file;
+				if (is_file($metafile) && preg_match('/-metadata.xml$/',$file)) {
+					$infos = parseCollection($metafile);
+					$infos['Dirname']= $metafile;
+					$collections[$infos['Name']] = $infos;
+				}
+			}
+			closedir($dh);
+		}
+		ksort($collections,SORT_LOCALE_STRING);
+		return $collections;
+	}
 
-		$stylesheet = preg_replace('/##entry_xpath##/','//'.$entry,$stylesheet);
-		$stylesheet = preg_replace('/##entry_element##/',$entry,$stylesheet);
-		if ($id) {$stylesheet = preg_replace('/##entry_id##/',$id,$stylesheet);}
-		if ($headword) {$stylesheet = preg_replace('/##headword_element##/',$headword,$stylesheet);}
-		if ($pron) {$stylesheet = preg_replace('/##pronunciation_element##/',$pron,$stylesheet);}
-		if ($pos) {$stylesheet = preg_replace('/##pos_element##/',$pos,$stylesheet);}
-		if ($example) {$stylesheet = preg_replace('/##example_element##/',$example,$stylesheet);}
-		if ($idiom) {$stylesheet = preg_replace('/##idiom_element##/',$idiom,$stylesheet);}
-		if ($sense) {$stylesheet = preg_replace('/##sense_element##/',$sense,$stylesheet);}
-		
-		$myFile = $name . '-view.xsl';
-		file_put_contents($myFile,$stylesheet);
-	}
-	
-	function makeName($dictname, $source, $cibles) {
-		$name = $dictname . '_' . $source;
-		if (count($cibles)>0) { $name .= '_';}
-		foreach ($cibles as $cible) {
-			$name .= $cible . '-';
-		}
-		if (count($cibles)>0) { $name = substr($name,0,strlen($name)-1);}
-		return $name;
-	}
-	
+
 	function restrictAccess($dirname, $users) {
 		$filename = CORPUS_SITE.'/'.$dirname.'/.htaccess';		
 		$htaccess = '<LimitExcept GET HEAD OPTIONS POST PROPFIND>
@@ -353,6 +224,57 @@
 		fwrite($fh, $htaccess);
 		fclose($fh);
 	}
+
+	function afficheLanguesOptions($option) {
+		echo 'option:',$option;
+		global $LANGUES;
+		asort($LANGUES,SORT_LOCALE_STRING);
+		foreach ($LANGUES as $key => $val) {
+    		echo "<option value='" . $key . "'";
+    		if ($key==$option) {echo ' selected="selected" ';}
+    		echo ">" . $val . "</option>\n";
+		}
+	}
+	
+	function srccmp($a, $b) {
+		return strcmp($a['Source'],$b['Source']);
+	}
+
+	function trgcmp($a, $b) {
+		return strcmp($a['Target'],$b['Target']);
+	}
+
+	function cplcmp($a, $b) {
+		$couplea = $a['Source'] . '-' . $a['Target'];
+		if (strcmp($a['Source'],$a['Target'])>0) {
+			$couplea = $a['Target'] . '-' . $a['Source'];
+		}
+		$coupleb = $b['Source'] . '-' . $b['Target'];
+		if (strcmp($b['Source'],$b['Target'])>0) {
+			$coupleb = $b['Target'] . '-' . $b['Source'];
+		}
+		return strcmp($couplea,$coupleb);
+	}
+
+# fonction récursive pour récupérer des fichers
+function select_files ($dir, $criteria) {
+	$res = array();
+	if (is_dir($dir) && $dh = opendir($dir)) {
+		while (($file = readdir($dh)) !== false) {
+			$filepath = $dir . '/'.$file;
+			if (is_file($filepath) && preg_match($criteria,$file)) {
+				$res[] = $filepath;
+			}
+			else if (is_dir($filepath) && $file != '.' && $file != '..') {
+				$subres = select_files($filepath, $criteria);
+				$res = array_merge($res, $subres);
+			}
+		}
+		closedir($dh);
+	}
+	return $res;
+}
+
 
   if (!function_exists('pathinfo_filename')) {
       if (version_compare(phpversion(), "5.2.0", "<")) {

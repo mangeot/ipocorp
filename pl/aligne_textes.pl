@@ -11,22 +11,33 @@ my $trglang = $ARGV[1];
 my $workdir = $ARGV[2];
 my $link = 'links';
 
-
 $workdir =~ s/([^\/])$/$1\//;
 
-my $srcdir = $workdir . $srclang .'/';
-my $trgdir = $workdir . $trglang .'/';
-my $linkdir = $workdir . $link .'/';
+my $srcd = $workdir . $srclang .'/';
+my $trgd = $workdir . $trglang .'/';
+my $linkd = $workdir . $link .'/';
 
-my @LS = `ls -a $srcdir`;
-foreach my $file (@LS) {
-  chomp $file;
-  if ($file =~ /.xml$/) {
-	my $srcfile = $srcdir . $file;
-	my $trgfile = $trgdir . $file;
-	my $linkfile = $linkdir . $file;
-	$linkfile =~ s/.xml/_$srclang\_$trglang.xml/;
-	print STDERR "align $srcfile with $trgfile\n";
-	`$uplug align/hun -dic $srclang-$trglang.dic -src $srcfile -trg $trgfile > $linkfile`;
-  }
+&aligne_textes($srcd,$trgd, $linkd);
+
+sub aligne_textes {
+	my $srcdir = $_[0];
+	my $trgdir = $_[1];
+	my $linkdir = $_[2];
+	`mkdir -p '$linkdir'`;
+	print STDERR "analysis of dir '$srcdir'\n";
+	my @LS = `ls -a '$srcdir'`;
+	foreach my $file (@LS) {
+	  chomp $file;
+	  my $srcfile = $srcdir . $file;
+	  my $trgfile = $trgdir . $file;
+	  my $linkfile = $linkdir . $file;
+	  if ($file =~ /\.xml$/) {
+		$linkfile =~ s/.xml/_$srclang\_$trglang.xml/;
+		print STDERR "align '$srcfile' with '$trgfile'\n";
+		`$uplug align/hun -dic $srclang-$trglang.dic -src '$srcfile' -trg '$trgfile' > '$linkfile'`;
+	  }
+	  elsif ($file !~ /^\./ && -d $srcdir . $file) {
+	  		&aligne_textes($srcfile . '/', $trgfile . '/',$linkfile.'/');
+	  }
+	}
 }

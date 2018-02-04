@@ -10,6 +10,7 @@
 	define('LANG_COOKIE','LANG_COOKIE');
 	define('SEP_NOM',"#");
 	
+	// The constant CORPUS_SITE must end with a slash.
 	define('CORPUS_SITE','%CORPUS_SITE%');
 //	define('CORPUS_SITE','/Data/Corpus/');
 	define('CORPUS_DAV','%CORPUS_DAV%');
@@ -24,6 +25,7 @@
 	define('DIRTXT','TXT');
 	define('DIRXML','XML');
 	define('DIRLINKS','links');
+	define('DIRCOLLECTIONS','collections');
 
 	define('DEFAULT_TEST_USER','%DEFAULT_TEST_USER%');
 //	define('DEFAULT_TEST_USER','mangeot');

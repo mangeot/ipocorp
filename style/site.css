@@ -83,3 +83,19 @@ a img {
 	background-position: 10px center;
 	background-image: url('error.png');
 }
+
+.collapse{
+  cursor: pointer;
+  display: block;
+  color: #0000EE;
+  text-decoration:underline;
+}
+.collapse + input{
+  display: none; /* hide the checkboxes */
+}
+.collapse + input + div{
+  display:none;
+}
+.collapse + input:checked + div{
+  display:block;
+}

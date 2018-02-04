@@ -1,5 +1,5 @@
 <?php
-$LANGUES = array(
+$ISO6392TO1 = array(
 'aar'=>'aa',
 'abk'=>'ab',
 'afr'=>'af',

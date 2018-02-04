@@ -18,12 +18,12 @@ use File::Basename;
 
 my $dirname = dirname(__FILE__);
 
-if (@ARGV< 2) {die 'usage: cree_corpus_cwb.pl CORPUS srclang trglang BITEXTS'};
+if (@ARGV< 4) {die 'usage: cree_corpus_cwb.pl CORPUS srclang trglang BITEXTS'};
 
 my $CORPUS    = shift(@ARGV);  # corpus name
 $CORPUS = lc($CORPUS);
-my $SRCLANG    = shift(@ARGV);  # source language
-my $TRGLANG    = shift(@ARGV);  # target language
+my $srclang    = shift(@ARGV);  # source language in ISO-639-1 two letter language code
+my $trglang    = shift(@ARGV);  # target language in ISO-639-1 two letter language code
 
 #my $REGDIR    = 'reg';  # CWB registry directory
 my $REGDIR    = '/usr/local/share/cwb/registry';  # CWB registry directory
@@ -32,35 +32,36 @@ my $DATDIR    = '/usr/local/share/cwb/data';
 
 my @BITEXTS   = @ARGV;        # one or more bitext-files (XCES align)
 
-rmtree "$DATDIR/$CORPUS";
-`$dirname/../software/uplug/uplug-cwb/scripts/bitext-indexer.pl $CORPUS $SRCLANG $TRGLANG $REGDIR $DATDIR @BITEXTS`;
+#rmtree "$DATDIR/$CORPUS";
+#`$dirname/../software/uplug/uplug-cwb/scripts/bitext-indexer.pl -o -y $CORPUS $SRCLANG $TRGLANG $REGDIR $DATDIR @BITEXTS`;
+`$dirname/bitext-indexer.pl -o -y $CORPUS $srclang $trglang $REGDIR $DATDIR @BITEXTS`;
 
-open my $in,  '<',  "$REGDIR/$CORPUS/fr" or die "Can't read old file: $!";
-open my $out, '>', "$REGDIR/$CORPUS-fr" or die "Can't write new file: $!";
+open my $in,  '<',  "$REGDIR/$CORPUS/$srclang" or die "Can't read old file: $!";
+open my $out, '>', "$REGDIR/$CORPUS-$srclang" or die "Can't write new file: $!";
 while( <$in> )
     {
-		s/^ID   fr/ID $CORPUS-fr/;
+		s/^ID   $srclang/ID $CORPUS-$srclang/;
     	s/^##:: charset  = "latin1"/##:: charset  = "utf8"/;
-    	s/^##:: language = "\?\?"/##:: language = "fr"/;
-		s/^ALIGNED ja/ALIGNED $CORPUS-ja/;
+    	s/^##:: language = "\?\?"/##:: language = "$srclang"/;
+		s/^ALIGNED $trglang/ALIGNED $CORPUS-$trglang/;
 
     	print $out $_;
     }
 close $out;
 
-open my $in,  '<',  "$REGDIR/$CORPUS/ja"      or die "Can't read old file: $!";
-open my $out, '>', "$REGDIR/$CORPUS-ja" or die "Can't write new file: $!";
+open my $in,  '<',  "$REGDIR/$CORPUS/$trglang"      or die "Can't read old file: $!";
+open my $out, '>', "$REGDIR/$CORPUS-$trglang" or die "Can't write new file: $!";
 while( <$in> )
     {
-		s/^ID   ja/ID $CORPUS-ja/;
+		s/^ID   $trglang/ID $CORPUS-$trglang/;
     	s/^##:: charset  = "latin1"/##:: charset  = "utf8"/;
-    	s/^##:: language = "\?\?"/##:: language = "ja"/;
-		s/^ALIGNED fr/ALIGNED $CORPUS-fr/;
+    	s/^##:: language = "\?\?"/##:: language = "$trglang"/;
+		s/^ALIGNED $srclang/ALIGNED $CORPUS-$srclang/;
 
     	print $out $_;
     }
 close $out;
 rmtree "$REGDIR/$CORPUS";
 
-rename "$DATDIR/$CORPUS/fr/ja.alx","$DATDIR/$CORPUS/fr/$CORPUS-ja.alx";
-rename "$DATDIR/$CORPUS/ja/fr.alx","$DATDIR/$CORPUS/ja/$CORPUS-fr.alx";
+rename "$DATDIR/$CORPUS/$srclang/$trglang.alx","$DATDIR/$CORPUS/$srclang/$CORPUS-$trglang.alx";
+rename "$DATDIR/$CORPUS/$trglang/$srclang.alx","$DATDIR/$CORPUS/$trglang/$CORPUS-$srclang.alx";
