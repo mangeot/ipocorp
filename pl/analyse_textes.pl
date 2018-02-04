@@ -52,7 +52,7 @@ sub ajoute_texte_id {
   my $file = $_[0];
   my $filename = $_[1];
   my $fileid = $filename;
-  if ($fileid =~ s/.xml$//) {
+  if ($fileid =~ s/\.xml$// && $file !~ /^./) {
   	$fileid =~ s/ //g;
 	if ($fileid =~ /^[\-.0-9]/) {
 		$fileid = 't'.$fileid;
