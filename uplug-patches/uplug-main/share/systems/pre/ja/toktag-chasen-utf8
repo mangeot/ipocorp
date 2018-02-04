@@ -1,0 +1,79 @@
+{
+  'input' => {
+    'text' => {
+      'format' => 'xml',
+      'root' => 's',
+    }
+  },
+  'output' => {
+    'text' => {
+      'format' => 'xml',
+      'root' => 's',
+      'write_mode' => 'overwrite',
+	'encoding' => 'utf-8',
+	'status' => 'tag',
+    }
+  },
+  'required' => {
+    'text' => {
+      'words' => undef,
+    }
+  },
+  'parameter' => {
+	'segments' => {
+	  'add IDs' => 1,
+	  'add parent id' => 1,
+		'tag' => 'w',
+	},
+     	'tagger' => {
+	   'program' => '/opt/local/bin/chasen-utf8',
+	   'input' => 'stdin',
+	   'parameter' => '-s',
+#          'language' => 'japanese',
+#          'startup base' => 'chasen_',
+#	   'encoding' => 'euc-jp',
+	   'encoding' => 'utf-8',
+     },
+     'output' => {
+#        'attribute' => 'pos',
+        'attributes' => 'text:kana:lem:pos:verb',
+#        'pattern' => '^(.*)\t+(.*)\t+(.*)\t+(.*)$',
+        'pattern' => '^([^	]+)	+([^	]+)	+([^	]+)	+([^	]+)	+(.*)$',
+        'token delimiter' => '\n',
+        'sentence delimiter' => "\nEOS\n",
+        'tag delimiter' => '\s+',
+#	'encoding' => 'euc-jp',
+	'encoding' => 'utf-8',
+     },
+     'input' => {
+        'token delimiter' => " ",
+#        'sentence delimiter' => "\nEOS\n",
+#        'sentence delimiter' => "\n",
+        'sentence delimiter' => "",
+#	'encoding' => 'euc-jp',
+	'encoding' => 'utf-8',
+     },
+     'output replacements' => {
+        '<unknown>' => '',
+        "\nEOS\nEOS\n" => "\n",
+     },
+  },
+  'module' => {
+    'program' => 'uplug-toktag',
+    'location' => '$UplugBin',
+    'name' => 'ChaSen',
+    'stdout' => 'text'
+  },
+  'arguments' => {
+    'shortcuts' => {
+       'in' => 'input:text:file',
+       'out' => 'output:text:file',
+       'attr' => 'parameter:output:attribute',
+       'char' => 'output:text:encoding',
+	'lang' => 'parameter:tagger:language',
+       'co' => 'output:text:encoding',
+       'ci' => 'input:text:encoding',
+       'r' => 'input:text:root',
+    }
+  },
+}
