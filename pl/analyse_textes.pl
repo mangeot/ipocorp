@@ -34,7 +34,7 @@ sub analyse_textes {
 	  chomp $file;
 	  my $infile = $srcdir . $file;
 	  my $analysisfile = $trgdir . $file;
-	  if ($file =~ /\.txt$/) {
+	  if ($file =~ /\.txt$/ && $file !~ /^./) {
 		`mkdir -p '$trgdir'`;
 		$analysisfile =~ s/\.txt/\.xml/;
 		print STDERR "Analysis of '$infile' to '$analysisfile'\n";
@@ -68,6 +68,7 @@ sub ajoute_texte_id {
 	} 
 	close $tmpfh;
 	close $input_fh;
+	print STDERR "move $tmpfilename $file\n";
 	move($tmpfilename,$file);
   }
 }
