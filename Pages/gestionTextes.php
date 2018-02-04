@@ -16,18 +16,20 @@
 	}
 	
 	
+	$sr = $ISO6392TO1[$Params['Language1']];
+	if (!empty($Params['Language2'])) {
+		$tr = $ISO6392TO1[$Params['Language2']];
+	}
 	if (!empty($_REQUEST['Analysis']) && $modif) {
 	// TODO supprimer le logFile qd c'est terminé => avec un cron
 		$logFile = tempnam(RACINE_SITE . 'data', 'analysis');
 		$ongoing_analysis = 1;
-		exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language1'] . ' ' . CORPUS_SITE . $Params['Dirname']. " > /dev/null 2> $logFile &");
+		exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language1'] . ' ' . $sr . ' ' . CORPUS_SITE . $Params['Dirname']. " > /dev/null 2> $logFile &");
 		if (!empty($_REQUEST['Language2'])) {
-			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2>> $logFile &");
+			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2>> $logFile &");
 		}
 	}
 	if (!empty($_REQUEST['Alignment']) && !empty($_REQUEST['Language2']) && $modif) {
-		$sr = $ISO6392TO1[$Params['Language1']];
-		$tr = $ISO6392TO1[$Params['Language2']];
 		$logFile = tempnam(RACINE_SITE . 'data', 'alignment');
 		$ongoing_analysis = 1;
 		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Language1'] . ' ' . $Params['Language2'] . ' ' . $sr . ' ' . $tr . '' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");

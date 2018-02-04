@@ -9,9 +9,10 @@ use File::Copy;
 my $uplug = '/usr/local/bin/uplug'; 
 my $tmpdir = tempdir( CLEANUP => 1 );
 
-if (@ARGV< 1) {die 'usage: analyse_textes.pl lang directory'};
+if (@ARGV< 1) {die 'usage: analyse_textes.pl lang lg directory'};
 my $lang    = $ARGV[0];  # source language
-my $workdir = $ARGV[1];
+my $lang    = $ARGV[1];  # source language
+my $workdir = $ARGV[2];
 my $xmldir = 'XML';
 my $txtdir= 'TXT';
 
@@ -37,7 +38,7 @@ sub analyse_textes {
 		`mkdir -p '$trgdir'`;
 		$analysisfile =~ s/\.txt/\.xml/;
 		print STDERR "Analysis of '$infile' to '$analysisfile'\n";
-		`$uplug pre/$lang\-all-mathieu -in '$infile' -out '$analysisfile'`;
+		`$uplug pre/$lg\-all-mathieu -in '$infile' -out '$analysisfile'`;
 		print STDERR "Add text id in $analysisfile\n";
 		&ajoute_texte_id($analysisfile, $file);
 	  }
