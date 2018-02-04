@@ -61,7 +61,7 @@
 		}
 		$linksfiles = implode(' ',$linksarray);
 		$command = RACINE_SITE . 'pl/cree_corpus_cwb.pl ' . $colname . ' ' . $collection['sr'] . ' ' . $collection['tr']. ' ' . $linksfiles;
-		//echo 'Commande : ',$command;
+		echo 'Commande : ',$command;
 		$process = new Process($command);
 		$process->start();
 		$generatePid = $process->getPid();
