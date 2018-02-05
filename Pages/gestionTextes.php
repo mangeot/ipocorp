@@ -5,7 +5,10 @@
 	if (empty($_REQUEST['Dirname']) || empty($_REQUEST['Name'])) {
 		header('Location:index.php');
 	}
-	$Params = $_REQUEST;
+	$metadataFile = CORPUS_SITE.'/'.$_REQUEST['Dirname']."/".$_REQUEST['Name'].'-metadata.xml';
+	}
+	$Params = parseCorpus($metadataFile);
+  	$Params['Dirname'] = $_REQUEST['Dirname'];
 	
 	$ongoing_analysis = 0;
 	$modif = false;
@@ -16,23 +19,23 @@
 	}
 	
 	
-	$sr = $ISO6392TO1[$Params['Language1']];
-	if (!empty($Params['Language2'])) {
-		$tr = $ISO6392TO1[$Params['Language2']];
+	$sr = $ISO6392TO1[$Params['Source']];
+	if (!empty($Params['Target'])) {
+		$tr = $ISO6392TO1[$Params['Target']];
 	}
 	if (!empty($_REQUEST['Analysis']) && $modif) {
 	// TODO supprimer le logFile qd c'est terminé => avec un cron
 		$logFile = tempnam(RACINE_SITE . 'data', 'analysis');
 		$ongoing_analysis = 1;
-		exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language1'] . ' ' . $sr . ' ' . CORPUS_SITE . $Params['Dirname']. " > /dev/null 2> $logFile &");
-		if (!empty($_REQUEST['Language2'])) {
-			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Language2'] . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2>> $logFile &");
+		exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Source'] . ' ' . $sr . ' ' . CORPUS_SITE . $Params['Dirname']. " > /dev/null 2> $logFile &");
+		if (!empty($_Params['Target'])) {
+			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Target'] . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2>> $logFile &");
 		}
 	}
-	if (!empty($_REQUEST['Alignment']) && !empty($_REQUEST['Language2']) && $modif) {
+	if (!empty($_REQUEST['Alignment']) && !empty($_Params['Target']) && $modif) {
 		$logFile = tempnam(RACINE_SITE . 'data', 'alignment');
 		$ongoing_analysis = 1;
-		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Language1'] . ' ' . $Params['Language2'] . ' ' . $sr . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");
+		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Source'] . ' ' . $Params['Target'] . ' ' . $sr . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");
 	}
 	
 	function affichep ($param, $default='') {

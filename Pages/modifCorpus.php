@@ -12,41 +12,8 @@
 	}
 	$Params = array();
 	if (empty($_REQUEST['Enregistrer']) && file_exists($metadataFile)) {
-		$doc = new DOMDocument();
-  		$doc->load($metadataFile);
-  		$dicts = $doc->getElementsByTagName("corpus-metadata");
-  		$dict = $dicts->item(0);
+		$Params = parseCorpus($metadataFile);
   		$Params['Dirname'] = $_REQUEST['Dirname'];
-  		$Params['NameC'] = $dict->getAttribute('fullname');
-  		$Params['Name'] = $dict->getAttribute('name');
-  		$Params['Owner'] = $dict->getAttribute('owner');
-  		$Params['Category'] = $dict->getAttribute('category');
-  		$Params['Type'] = $dict->getAttribute('type');
-  		$Params['Pairs'] = $dict->getAttribute('pairs');
-  		$Params['Language1'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('d:lang');
-  		$Params['SourceTexts'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('texts');
-  		$Params['SourceWords'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('words');
-  		$Params['SourceSentences'] = $dict->getElementsByTagName('source-language')->item(0)->getAttribute('sentences');
-  		$Params['Language2'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('d:lang');
-  		$Params['TargetTexts'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('texts');
-  		$Params['TargetWords'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('words');
-  		$Params['TargetSentences'] = $dict->getElementsByTagName('target-language')->item(0)->getAttribute('sentences');
-  		$Params['CreationDate'] = $dict->getAttribute('creation-date');
-  		$Params['InstallationDate'] = $dict->getAttribute('installation-date');
-  		$Params['Contents'] = $dict->getElementsByTagName('contents')->item(0)->nodeValue;
-  		$Params['Domain'] = $dict->getElementsByTagName('domain')->item(0)->nodeValue;
-  		$Params['Source'] = $dict->getElementsByTagName('source')->item(0)->nodeValue;
-  		$Params['Authors'] = $dict->getElementsByTagName('authors')->item(0)->nodeValue;
-  		$Params['Legal'] = $dict->getElementsByTagName('legal')->item(0)->nodeValue;
-  		$Params['Access'] = ($dict->getElementsByTagName('access')->item(0))?$dict->getElementsByTagName('access')->item(0)->nodeValue:'restricted';
-  		$Params['Reference'] = $dict->getElementsByTagName('reference')->item(0)->nodeValue;
-  		$Params['Comments'] = $dict->getElementsByTagName('comments')->item(0)->nodeValue;
-		$administrators = $dict->getElementsByTagName('user-ref');
-		$adminString = '';
-		foreach ($administrators as $user) {
-			$adminString .= $user->getAttribute('name') . ',';
-		}
-		$Params['Administrators'] = trim($adminString,',');
   	}
 	else {
 		$Params = $_REQUEST;
@@ -140,13 +107,7 @@
 		<form action=""><?php echo gettext('Le fichier de métadonnées du corpus a été enregistré.'); ?>
 		<input type="hidden" name="Dirname" value="<?php echo $Params['Dirname']; ?>" />
 		<input type="hidden" name="Name" value="<?php echo $Params['Name'];?>" />
-		<input type="hidden" name="Authors" value="<?php echo $Params['Authors']; ?>" />
-		<input type="hidden" name="Administrators" value="<?php echo $Params['Administrators']; ?>" />
-		<input type="hidden" name="Language1" value="<?php echo $Params['Language1']; ?>" />
-		<?php if (!empty($Params['Language2'])) {
-			echo '<input type="hidden" name="Language2" value="',$Params['Language2'],'" />';
-		}
-		 echo gettext('Vous pouvez maintenant gérer les <input type="submit" name="ManageTexts" value="textes"/>.')?>
+		<?php echo gettext('Vous pouvez maintenant gérer les <input type="submit" name="ManageTexts" value="textes"/>.')?>
 		</form>
 	<?php
 	}
@@ -306,7 +267,7 @@
 		}
 		if (!empty($params['Access'])) {
 			if ($params['Access'] == 'public') {
-				symlink(CORPUS_SITE.'/'.$dirname,CORPUS_SITE_WEB_PUBLIC.'/'.$dirname);
+				@symlink(CORPUS_SITE.'/'.$dirname,CORPUS_SITE_WEB_PUBLIC.'/'.$dirname);
 			}
 			else {
 				@unlink(CORPUS_SITE_WEB_PUBLIC.'/'.$dirname);
