@@ -22,16 +22,16 @@
    pairs="'.$params['Pairs'].'"
    type="'.$params['Type'].'"> 
  <languages>
- 	 <source-language texts="'.$params['SourceTexts'].'"  words="'.$params['SourceWords'].'" sentences="'.$params['SourceSentences'].'" d:lang="'.$params['Language1'].'"/>
+ 	 <source-language texts="'.$params['SourceTexts'].'"  words="'.$params['SourceWords'].'" sentences="'.$params['SourceSentences'].'" d:lang="'.$params['Source'].'"/>
 ';
- 	if (!empty($params['Language2'])) {
- 		$res .= ' 	 <target-language texts="'.$params['TargetTexts'].'" words="'.$params['TargetWords'].'" sentences="'.$params['TargetSentences'].'"  d:lang="'.$params['Language2'].'"/>
+ 	if (!empty($params['Target'])) {
+ 		$res .= ' 	 <target-language texts="'.$params['TargetTexts'].'" words="'.$params['TargetWords'].'" sentences="'.$params['TargetSentences'].'"  d:lang="'.$params['Target'].'"/>
 ';
  	}
  	$res .=' </languages>
  <contents>'.htmlspecialchars($params['Contents']).'</contents>
  <domain>'.htmlspecialchars($params['Domain']).'</domain> 
- <source>'.htmlspecialchars($params['Source']).'</source>
+ <source>'.htmlspecialchars($params['Provenance']).'</source>
  <authors>'.$params['Authors'].'</authors>
  <legal>'.$params['Legal'].'</legal>
  <access>'.$params['Access'].'</access>
@@ -69,7 +69,7 @@
   		$infos['Contents'] = $corp->getElementsByTagName('contents')->item(0)->nodeValue;
   		$infos['Domain'] = $corp->getElementsByTagName('domain')->item(0)->nodeValue;
   		if (empty($infos['Domain'])) {echo 'domaine vide : ',$dico;}
-  		$infos['Source'] = $corp->getElementsByTagName('source')->item(0)->nodeValue;
+  		$infos['Provenance'] = $corp->getElementsByTagName('source')->item(0)->nodeValue;
   		$infos['Authors'] = $corp->getElementsByTagName('authors')->item(0)->nodeValue;
   		//if (empty($infos['Authors'])) {echo 'auteurs vides : ',$dico;}
   		$infos['Legal'] = $corp->getElementsByTagName('legal')->item(0)->nodeValue;
