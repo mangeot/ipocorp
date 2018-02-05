@@ -111,7 +111,7 @@
 <pre>
 <?php
 $dir =  CORPUS_SITE . $Params['Dirname'];
-$tree = `/usr/local/bin/tree $dir`; 
+$tree = `TREE_COMMAND $dir`; 
 echo $tree;
 ?>
 </pre>

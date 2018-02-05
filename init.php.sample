@@ -24,6 +24,8 @@
 	define('CORPUS_SITE_WEB_PUBLIC','%CORPUS_SITE_WEB_PUBLIC%');
 	
 	define('REF_SITE','%REF_SITE%');
+	
+	define('TREE_COMMAND','/usr/bin/tree');
 
 	define('DIRTXT','TXT');
 	define('DIRXML','XML');
