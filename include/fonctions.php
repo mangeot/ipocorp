@@ -77,6 +77,9 @@
   		if ($tmp->length>0) {$infos['Comments'] = $tmp->item(0)->nodeValue;}
   		$tmp = $corp->getElementsByTagName('Reference');
   		if ($tmp->length>0) {$infos['Reference'] = $tmp->item(0)->nodeValue;}
+  		$tmp = $corp->getElementsByTagName('Access');
+  		if ($tmp->length>0) {$infos['Access'] = $tmp->item(0)->nodeValue;}
+
   		$adminNodes = $corp->getElementsByTagName('user-ref');
   		$admins = array();
   		foreach ($adminNodes as $admin) {
