@@ -2,7 +2,7 @@
 	require_once('../init.php');
 	$metadataFile = '';
 	if (!empty($_REQUEST['Dirname']) && !empty($_REQUEST['Name'])) {
-		if (!empty($_REQUEST['ManageTexts']) && !empty($_REQUEST['Authors']) && !empty($_REQUEST['Administrators'])) {
+		if (!empty($_REQUEST['ManageTexts'])) {
 			header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name']);
 			exit;
 		}
@@ -15,7 +15,7 @@
   	}
 	else {
 		$Params = $_REQUEST;
-		$Params['Administrators'] = preg_split("/[\s,;]+/", $Params['Administrators']);
+		$Params['AdministratorArray'] = preg_split("/[\s,;]+/", $Params['Administrators']);
 		if (empty($Params['Pairs'])) {
 			$Params['Pairs'] = 0;
 		}
@@ -94,8 +94,8 @@
 <?php
 	$modif = false;
 	$user=!empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
-	if (!empty($Params['Administrators'])) {
-		$admins = $Params['Administrators'];
+	if (!empty($Params['AdministratorArray'])) {
+		$admins = $Params['AdministratorArray'];
 		$modif = in_array($user, $admins);
 		if ($modif && !empty($Params['Name']) && (!empty($_REQUEST['Enregistrer']) || !empty($_REQUEST['CompterTextes']) || !empty($_REQUEST['CompterPhrases']) || !empty($_REQUEST['CompterLiens']))) {
 			$Params['Dirname'] = creerCorpus($Params);
@@ -233,7 +233,7 @@
 	}
 			
 	function creerCorpus($params) {
-		$admins = preg_split("/[\s,;]+/", $params['Administrators']);		
+		$admins = $params['AdministratorArray'];		
 		$name = $params['Name'];
 		if (!preg_match('/^[A-Z0-9][a-zA-Z0-9\-]+$/',$name)) {
 			echo '<p class="erreur">',gettext('Le nom abrégé du dictionnaire contient des caractères non autorisés !'),'</p>';

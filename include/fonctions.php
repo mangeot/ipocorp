@@ -82,7 +82,8 @@
   		foreach ($adminNodes as $admin) {
   			array_push($admins,$admin->getAttribute('name'));
   		}
-		$infos['Administrators'] = $admins; 
+		$infos['AdministratorArray'] = $admins; 
+		$infos['Administrators'] = join(',',$admins); 
   		$infos['Source'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('d:lang');
   		$infos['SourceTexts'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('texts');
   		$infos['SourceWords'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('words');

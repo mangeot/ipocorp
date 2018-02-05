@@ -13,8 +13,8 @@
 	$ongoing_analysis = 0;
 	$modif = false;
 	$user=!empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
-	if (!empty($Params['Administrators'])) {
-		$modif = in_array($user, $Params['Administrators']);
+	if (!empty($Params['AdministratorArray'])) {
+		$modif = in_array($user, $Params['AdministratorArray']);
 	}
 	
 	
