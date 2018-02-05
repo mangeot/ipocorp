@@ -136,7 +136,6 @@
 			</p>';
 	}
 	?>
-<?php echo 'source:',$Params['Source'];?>	
 	<p><?php echo gettext('Langue source'),gettext(' : ');?>
 		<select name="Source" onchange="this.form.submit()">
 			<option value=""><?php echo gettext('Choisir...');?></option>
