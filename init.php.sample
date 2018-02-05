@@ -16,11 +16,12 @@
 	define('CORPUS_DAV','%CORPUS_DAV%');
 //	define('CORPUS_DAV','https://papillon.imag.fr/DAV/corpus');
 	define('CORPUS_WEB','%CORPUS_WEB%');
-//	define('CORPUS_WEB','http://localhost/ipocorp/Corpus');
-	define('CORPUS_SITE_PUBLIC','%CORPUS_SITE_PUBLIC%');
+//	define('CORPUS_SITE_WEB','http://localhost/ipocorp/Corpus');
+	define('CORPUS_SITE_WEB','%CORPUS_SITE_WEB%');
 //	define('CORPUS_SITE_PUBLIC','/Data/CorpusPub');
 	define('CORPUS_WEB_PUBLIC','%CORPUS_WEB_PUBLIC%');
 //	define('CORPUS_WEB_PUBLIC','http://localhost/ipocorp/Corpus');
+	define('CORPUS_SITE_WEB_PUBLIC','%CORPUS_SITE_WEB_PUBLIC%');
 	
 	define('REF_SITE','%REF_SITE%');
 

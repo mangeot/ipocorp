@@ -306,10 +306,10 @@
 		}
 		if (!empty($params['Access'])) {
 			if ($params['Access'] == 'public') {
-				symlink(CORPUS_SITE.'/'.$dirname,CORPUS_SITE_PUBLIC.'/'.$dirname);
+				symlink(CORPUS_SITE.'/'.$dirname,CORPUS_SITE_WEB_PUBLIC.'/'.$dirname);
 			}
 			else {
-				@unlink(CORPUS_SITE_PUBLIC.'/'.$dirname);
+				@unlink(CORPUS_SITE_WEB_PUBLIC.'/'.$dirname);
 			}
 		}
 		$corpusmetadata = creerCorpusMetadata($params);

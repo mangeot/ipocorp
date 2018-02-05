@@ -54,8 +54,11 @@
 	
 		$adresseDonnees = $modif?gettext('Adresse WebDAV pour ajouter des textes'):gettext('Adresse WebDAV pour accéder aux textes');
 		echo '<p>',$adresseDonnees,gettext(' : '),'<a href="',CORPUS_DAV,'/',$Params['Dirname'],'">',CORPUS_DAV,'/',$Params['Dirname'],'</a></p>';
-		if (!empty($Params['Access']) && $Params['Access'] == 'public' && file_exists(CORPUS_SITE_PUBLIC.'/'.$Params['Dirname'])) {
+		if (!empty($Params['Access']) && $Params['Access'] == 'public' && file_exists(CORPUS_SITE_WEB_PUBLIC.'/'.$Params['Dirname'])) {
 			echo '<p>',gettext('Adresse Web pour accès public aux données'),gettext(' : '),'<a href="',CORPUS_WEB_PUBLIC,'/',$Params['Dirname'],'">',CORPUS_WEB_PUBLIC,'/',$Params['Dirname'],'</a></p>';
+		}
+		else {
+			echo '<p>',gettext('Adresse Web pour accès protégé aux données'),gettext(' : '),'<a href="',CORPUS_WEB,'/',$Params['Dirname'],'">',CORPUS_WEB,'/',$Params['Dirname'],'</a></p>';
 		}
 	 if ($modif) { ?>
 <form action="?" method="post">
