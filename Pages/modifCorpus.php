@@ -94,7 +94,7 @@
 	$modif = false;
 	$user=!empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
 	if (!empty($Params['Administrators'])) {
-		$admins = preg_split("/[\s,;]+/", $Params['Administrators']);
+		$admins = $Params['Administrators'];
 		$modif = in_array($user, $admins);
 		if ($modif && !empty($Params['Name']) && (!empty($_REQUEST['Enregistrer']) || !empty($_REQUEST['CompterTextes']) || !empty($_REQUEST['CompterPhrases']) || !empty($_REQUEST['CompterLiens']))) {
 			$Params['Dirname'] = creerCorpus($Params);
