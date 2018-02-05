@@ -15,6 +15,7 @@
   	}
 	else {
 		$Params = $_REQUEST;
+		$Params['Administrators'] = preg_split("/[\s,;]+/", $Params['Administrators']);
 		if (empty($Params['Pairs'])) {
 			$Params['Pairs'] = 0;
 		}
