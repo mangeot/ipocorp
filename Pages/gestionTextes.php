@@ -14,8 +14,7 @@
 	$modif = false;
 	$user=!empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
 	if (!empty($Params['Administrators'])) {
-		$admins = preg_split("/[\s,;]+/", $Params['Administrators']);
-		$modif = in_array($user, $admins);
+		$modif = in_array($user, $Params['Administrators']);
 	}
 	
 	
@@ -91,11 +90,8 @@
 <div>
 <input type="hidden" name="Dirname" value="<?php echo $Params['Dirname']; ?>" />
 <input type="hidden" name="Name" value="<?php echo $Params['Name']; ?>" />
-<input type="hidden" name="Language1" value="<?php echo $Params['Language1']; ?>" />
-<input type="hidden" name="Language2" value="<?php echo $Params['Language2']; ?>" />
-<input type="hidden" name="Administrators" value="<?php echo $Params['Administrators']; ?>" />
 <input type="submit" name="Analysis" value="<?php echo gettext('Analyse'); ?>" /> des textes : ajout de balises XML et analyse syntaxique<br/>
-<?php if (!empty($Params['Language2']) && $modif) { 
+<?php if (!empty($Params['Target']) && $modif) { 
 	echo '<input type="submit" name="Alignment" value="', gettext('Alignement'),'" /> des fichiers XML source et cible avec hunalign';
 }
 ?>
