@@ -55,9 +55,11 @@
 		foreach ($collection['Corpora'] as $corpusname) {
 			$corpus = $corpora[$corpusname];
 			$dirpath = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRXML . '/' . DIRLINKS;
-			$dirref = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRREF . '/';
+			echo 'refiste:',REF_SITE ;
 			if (REF_SITE != '') {
-				`cp $dirref/*.html REF_SITE`;
+				$dirref = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRREF;
+				$refsite = REF_SITE;
+				`cp $dirref/*.html $refsite/.`;
 			}
 			
 			$corpuslinks = select_files($dirpath,'/\.xml$/');
