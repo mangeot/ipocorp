@@ -22,10 +22,13 @@
 	define('CORPUS_WEB_PUBLIC','%CORPUS_WEB_PUBLIC%');
 //	define('CORPUS_WEB_PUBLIC','http://localhost/ipocorp/Corpus');
 	
+	define('REF_SITE','%REF_SITE%');
+
 	define('DIRTXT','TXT');
 	define('DIRXML','XML');
 	define('DIRLINKS','links');
 	define('DIRCOLLECTIONS','collections');
+	define('DIRREF','Ref');
 
 	define('DEFAULT_TEST_USER','%DEFAULT_TEST_USER%');
 //	define('DEFAULT_TEST_USER','mangeot');

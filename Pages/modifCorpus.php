@@ -80,7 +80,7 @@
 		$dirtrg = $dirtxt . '/' . $Params['Language2'];
 		$Params['TargetTexts']  = trim(`ls -1 $dirtrg/* | grep '.txt' | wc -l`);
 	}
-	if (!empty($_REQUEST['CompterPhrases'])) {
+	else if (!empty($_REQUEST['CompterPhrases'])) {
 		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
 		$dirsrc = $dirxml . '/' . $Params['Language1'];
 		$Params['SourceWords'] = trim(`grep -R '<w ' $dirsrc/* | wc -l`);
@@ -89,10 +89,31 @@
 		$Params['TargetWords'] = trim(`grep -R '<w ' $dirtrg/* | wc -l`);
 		$Params['TargetSentences'] = trim(`grep -R '<s ' $dirtrg/* | wc -l`);
 	}	
-	if (!empty($_REQUEST['CompterLiens'])) {
+	else if (!empty($_REQUEST['CompterLiens'])) {
 		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
 		$dirlinks = $dirxml . '/' . DIRLINKS;
 		$Params['Pairs'] = trim(`grep -R '<link ' $dirlinks/* | wc -l`);
+	}
+	else if (!empty($_REQUEST['GenererReferences'])) {
+		$htmlhead = '<html><head><meta charset="UTF-8" /><title>Référence bibliographique</title></head><body>';
+		$htmlfoot = '</body></html>';
+
+		$dirref = CORPUS_SITE . $Params['Dirname'] . '/' . DIRREF . '/';
+		`mkdir -p $dirref`;
+		$dirsrc = CORPUS_SITE . $Params['Dirname'] . '/' . DIRTXT . '/' . $Params['Language1'];
+		$filenames = select_files($dirsrc,'/\.txt$/');
+		
+		foreach ($filenames as $file) {
+			$file = preg_replace('/^.+\/([^\/]+)\.txt$/','$1.html',$file);
+			$file = $dirref . $file;
+			echo $file,"\n<br/>";
+			$html = $Params['Reference'];
+//			$html = decode_htmlentities($html);
+			$html = $htmlhead . $html . $htmlfoot;
+			$fh = fopen($file, 'w') or die("impossible d'ouvrir le fichier ".$file);
+			fwrite($fh, $html);
+			fclose($fh);
+		}
 	}
 
 	
@@ -215,7 +236,9 @@
 	</select>
 	</p>
 
-	<p><?php echo gettext('Référence');?> <textarea id="Reference" name="Reference"><?php affichep('Reference');?></textarea></p>	
+	<p><?php echo gettext('Référence');?> <textarea id="Reference" name="Reference" cols="40" rows="8"><?php affichep('Reference');?></textarea><br/>
+			<input type="submit" name="GenererReferences" value="<?php echo gettext('Générer les fichiers de référence'); ?>" />
+	</p>	
 	<p><?php echo gettext('Commentaires');?> <textarea id="Comments" name="Comments"><?php affichep('Comments');?></textarea></p>	
 	<p><?php echo gettext('Administrateurs');?> <input type="text" id="Administrators" name="Administrators" value="<?php affichep('Administrators',$user);?>"/></p>	
 	<a href="#" onclick="document.getElementById('moreInfo').style.display='block'"><?php echo gettext('Plus d\'infos')?></a><br/>

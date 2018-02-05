@@ -55,8 +55,12 @@
 		foreach ($collection['Corpora'] as $corpusname) {
 			$corpus = $corpora[$corpusname];
 			$dirpath = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRXML . '/' . DIRLINKS;
+			$dirref = CORPUS_SITE . $Params['Dirname'] . '/' . DIRREF . '/';
+			if (REF_SITE != '') {
+				`cp $dirref/*.html REF_SITE`;
+			}
 			
-			$corpuslinks = select_files($dirpath,'/.xml$/');
+			$corpuslinks = select_files($dirpath,'/\.xml$/');
 			$linksarray = array_merge($linksarray,$corpuslinks);
 		}
 		$linksfiles = implode(' ',$linksarray);
