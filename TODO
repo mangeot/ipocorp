@@ -1,7 +1,7 @@
-La génération de cwb ne marche pas à partir du PHP, vérifier.
+
+Reconstruire les autres corpus
+Changer l'interface pour regrouper les corpus de même domaine.
 
 Trouver un moyen d'agrandir le contexte de la phrase japonaise.
-
-Changer l'interface pour regrouper les corpus de même domaine.
 
 Tester le Dockerfile
