@@ -55,7 +55,7 @@
 		foreach ($collection['Corpora'] as $corpusname) {
 			$corpus = $corpora[$corpusname];
 			$dirpath = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRXML . '/' . DIRLINKS;
-			$dirref = CORPUS_SITE . $Params['Dirname'] . '/' . DIRREF . '/';
+			$dirref = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRREF . '/';
 			if (REF_SITE != '') {
 				`cp $dirref/*.html REF_SITE`;
 			}
@@ -180,7 +180,7 @@
 		echo '<td><acronym title="',$corpus['NameC'],'">',$nom,'</acronym> </td>';
 		echo '<td>',$corpus['Category'],'</td>';
 		echo '<td >',$corpus['Type'],'</td>';
-		echo '<td>',implode(',',$corpus['Administrators']),'</td>';
+		echo '<td>',$corpus['Administrators'],'</td>';
 		echo '<td>',$couple,'</td>';
 		echo '<td><abbr title="',$LANGUES[$corpus['Source']],'">',$corpus['Source'],'</abbr></td>';
 		echo '<td><abbr title="',$LANGUES[$corpus['Target']],'">',$corpus['Target'],'</abbr></td>';
@@ -193,7 +193,7 @@
 		} 
 		echo '/>';
 		echo '<td>';
-		if (in_array($user, $corpus['Administrators'])) {
+		if (in_array($user, $corpus['AdministratorArray'])) {
 			echo '<a title="Éditer" href="modifCorpus.php?Modifier=on&Dirname=',$corpus['Dirname'],'&Name=',$corpus['Name'],'"><img style="border:none;" src="',RACINE_WEB,'images/assets/b_edit.png" alt="Éditer"/></a>';
 		}
 		else {

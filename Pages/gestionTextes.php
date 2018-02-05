@@ -26,11 +26,11 @@
 		$logFile = tempnam(RACINE_SITE . 'data', 'analysis');
 		$ongoing_analysis = 1;
 		exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Source'] . ' ' . $sr . ' ' . CORPUS_SITE . $Params['Dirname']. " > /dev/null 2> $logFile &");
-		if (!empty($_Params['Target'])) {
+		if (!empty($Params['Target'])) {
 			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Target'] . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2>> $logFile &");
 		}
 	}
-	if (!empty($_REQUEST['Alignment']) && !empty($_Params['Target']) && $modif) {
+	if (!empty($_REQUEST['Alignment']) && !empty($Params['Target']) && $modif) {
 		$logFile = tempnam(RACINE_SITE . 'data', 'alignment');
 		$ongoing_analysis = 1;
 		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Source'] . ' ' . $Params['Target'] . ' ' . $sr . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");
@@ -110,7 +110,8 @@
 <pre>
 <?php
 $dir =  CORPUS_SITE . $Params['Dirname'];
-$tree = `TREE_COMMAND $dir`; 
+$command = TREE_COMMAND . ' '. $dir;
+$tree = `$command`; 
 echo $tree;
 ?>
 </pre>
