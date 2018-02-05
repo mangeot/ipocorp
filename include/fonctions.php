@@ -75,9 +75,9 @@
   		$infos['Legal'] = $corp->getElementsByTagName('legal')->item(0)->nodeValue;
   		$tmp = $corp->getElementsByTagName('comments');
   		if ($tmp->length>0) {$infos['Comments'] = $tmp->item(0)->nodeValue;}
-  		$tmp = $corp->getElementsByTagName('Reference');
+  		$tmp = $corp->getElementsByTagName('reference');
   		if ($tmp->length>0) {$infos['Reference'] = $tmp->item(0)->nodeValue;}
-  		$tmp = $corp->getElementsByTagName('Access');
+  		$tmp = $corp->getElementsByTagName('access');
   		if ($tmp->length>0) {$infos['Access'] = $tmp->item(0)->nodeValue;}
 
   		$adminNodes = $corp->getElementsByTagName('user-ref');
