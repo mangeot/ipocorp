@@ -106,9 +106,8 @@
 		foreach ($filenames as $file) {
 			$file = preg_replace('/^.+\/([^\/]+)\.txt$/','$1.html',$file);
 			$file = $dirref . $file;
-			echo $file,"\n<br/>";
 			$html = $Params['Reference'];
-//			$html = decode_htmlentities($html);
+//			$html = html_entity_decode($html);
 			$html = $htmlhead . $html . $htmlfoot;
 			$fh = fopen($file, 'w') or die("impossible d'ouvrir le fichier ".$file);
 			fwrite($fh, $html);
