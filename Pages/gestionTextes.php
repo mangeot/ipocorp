@@ -6,7 +6,6 @@
 		header('Location:index.php');
 	}
 	$metadataFile = CORPUS_SITE.'/'.$_REQUEST['Dirname']."/".$_REQUEST['Name'].'-metadata.xml';
-	}
 	$Params = parseCorpus($metadataFile);
   	$Params['Dirname'] = $_REQUEST['Dirname'];
 	
