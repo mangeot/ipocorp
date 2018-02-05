@@ -59,7 +59,7 @@
 		echo '<td><acronym title="',$corpus['NameC'],'">',$nom,'</acronym> </td>';
 		echo '<td>',$corpus['Category'],'</td>';
 		echo '<td >',$corpus['Type'],'</td>';
-		echo '<td>',implode(',',$corpus['Administrators']),'</td>';
+		echo '<td>',$corpus['Administrators'],'</td>';
 		echo '<td>',$couple,'</td>';
 		echo '<td><abbr title="',$LANGUES[$corpus['Source']],'">',$corpus['Source'],'</abbr></td>';
 		echo '<td><abbr title="',$LANGUES[$corpus['Target']],'">',$corpus['Target'],'</abbr></td>';
@@ -67,7 +67,7 @@
 		echo '<td style="text-align:right">',$corpus['Pairs'],'</td>';
 		$paires += intval($corpus['Pairs']);
 		echo '<td>';
-		if (in_array($user, $corpus['Administrators'])) {
+		if (in_array($user, $corpus['AdministratorArray'])) {
 			echo '<a title="Éditer" href="modifCorpus.php?Modifier=on&Dirname=',$corpus['Dirname'],'&Name=',$corpus['Name'],'"><img style="border:none;" src="',RACINE_WEB,'images/assets/b_edit.png" alt="Éditer"/></a>';
 		}
 		else {
