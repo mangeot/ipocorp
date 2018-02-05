@@ -3,9 +3,7 @@
 	$metadataFile = '';
 	if (!empty($_REQUEST['Dirname']) && !empty($_REQUEST['Name'])) {
 		if (!empty($_REQUEST['ManageTexts']) && !empty($_REQUEST['Authors']) && !empty($_REQUEST['Administrators'])) {
-			header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name'].
-			'&Authors='.$_REQUEST['Authors'].'&Administrators='.$_REQUEST['Administrators'] .
-			'&Language1='.$_REQUEST['Language1'].'&Language2='.$_REQUEST['Language2']);
+			header('Location:gestionTextes.php?Dirname='.$_REQUEST['Dirname'].'&Name='.$_REQUEST['Name'];
 			exit;
 		}
 		$metadataFile = CORPUS_SITE.'/'.$_REQUEST['Dirname']."/".$_REQUEST['Name'].'-metadata.xml';
@@ -42,17 +40,17 @@
 	
 	if (!empty($_REQUEST['CompterTextes'])) {
 		$dirtxt = CORPUS_SITE . $Params['Dirname'] . '/' . DIRTXT;
-		$dirsrc = $dirtxt . '/' . $Params['Language1'];
+		$dirsrc = $dirtxt . '/' . $Params['Source'];
 		$Params['SourceTexts'] = trim(`ls -1 $dirsrc/* | grep '.txt' | wc -l`);
-		$dirtrg = $dirtxt . '/' . $Params['Language2'];
+		$dirtrg = $dirtxt . '/' . $Params['Target'];
 		$Params['TargetTexts']  = trim(`ls -1 $dirtrg/* | grep '.txt' | wc -l`);
 	}
 	else if (!empty($_REQUEST['CompterPhrases'])) {
 		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
-		$dirsrc = $dirxml . '/' . $Params['Language1'];
+		$dirsrc = $dirxml . '/' . $Params['Source'];
 		$Params['SourceWords'] = trim(`grep -R '<w ' $dirsrc/* | wc -l`);
 		$Params['SourceSentences'] = trim(`grep -R '<s ' $dirsrc/* | wc -l`);		
-		$dirtrg = $dirxml . '/' . $Params['Language2'];		
+		$dirtrg = $dirxml . '/' . $Params['Target'];		
 		$Params['TargetWords'] = trim(`grep -R '<w ' $dirtrg/* | wc -l`);
 		$Params['TargetSentences'] = trim(`grep -R '<s ' $dirtrg/* | wc -l`);
 	}	
@@ -67,7 +65,7 @@
 
 		$dirref = CORPUS_SITE . $Params['Dirname'] . '/' . DIRREF . '/';
 		`mkdir -p $dirref`;
-		$dirsrc = CORPUS_SITE . $Params['Dirname'] . '/' . DIRTXT . '/' . $Params['Language1'];
+		$dirsrc = CORPUS_SITE . $Params['Dirname'] . '/' . DIRTXT . '/' . $Params['Source'];
 		$filenames = select_files($dirsrc,'/\.txt$/');
 		
 		foreach ($filenames as $file) {
@@ -139,15 +137,15 @@
 	?>
 	
 	<p><?php echo gettext('Langue source'),gettext(' : ');?>
-		<select name="Language1" onchange="this.form.submit()">
+		<select name="Source" onchange="this.form.submit()">
 			<option value=""><?php echo gettext('Choisir...');?></option>
-		<?php afficheLanguesOptions($Params['Language1']); ?>
+		<?php afficheLanguesOptions($Params['Source']); ?>
 		</select></p>
 	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') { ?>
 		<p><?php echo gettext('Langue cible'),gettext(' : ');?>
-		<select name="Language2" onchange="this.form.submit()">
+		<select name="Target" onchange="this.form.submit()">
 			<option value=""><?php echo gettext('Choisir...');?></option>
-			<?php afficheLanguesOptions($Params['Language2']); ?>
+			<?php afficheLanguesOptions($Params['Target']); ?>
 		</select></p>
 	<?php } ?>
 
@@ -240,9 +238,9 @@
 			echo '<p class="erreur">',gettext('Le nom abrégé du dictionnaire contient des caractères non autorisés !'),'</p>';
 			return '';
 		}
-		$dirname = $name.'_' . $params['Language1'];
-		if (!empty($params['Language2'])) {
-			$dirname .= '-' . $params['Language2'];
+		$dirname = $name.'_' . $params['Source'];
+		if (!empty($params['Target'])) {
+			$dirname .= '-' . $params['Target'];
 		}
 		if (!empty($params['Dirname'])) {
 			$olddirname = $params['Dirname'];
@@ -254,14 +252,14 @@
 		else {
 			@mkdir(CORPUS_SITE.'/'.$dirname);
 			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT);
-			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT.'/'.$params['Language1']);
-			if (!empty($params['Language2'])) {
-				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT.'/'.$params['Language2']);
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT.'/'.$params['Source']);
+			if (!empty($params['Target'])) {
+				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRTXT.'/'.$params['Target']);
 			}
 			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML);
-			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Language1']);
-			if (!empty($params['Language2'])) {
-				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Language2']);
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Source']);
+			if (!empty($params['Target'])) {
+				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Target']);
 				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.DIRLINKS);
 			}
 		}
