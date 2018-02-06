@@ -1,6 +1,5 @@
 <?php
 	require_once('../init.php');
-	require_once(RACINE_SITE . 'include/Process.php');
 
 	$user = !empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
 	$collectiondir = CORPUS_SITE.DIRCOLLECTIONS;
@@ -22,6 +21,11 @@
 	if (!empty($_REQUEST['SupprimerCollection']) && 
 		!empty($_REQUEST['Name'])) {
 		@unlink($collectiondir . '/'. $_REQUEST['Name'] . '-metadata.xml');	
+		$registre = DIRCWB . '/registry/'.$_REQUEST['Name'];
+		`rm -rf $registre\-fr`;
+		`rm -rf $registre\-ja`;
+		$data = DIRCWB . '/data/'.$_REQUEST['Name'];
+		`rm -rf $data`;
 	}
 
 # crée puis enregistre la collection 
@@ -55,22 +59,22 @@
 		foreach ($collection['Corpora'] as $corpusname) {
 			$corpus = $corpora[$corpusname];
 			$dirpath = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRXML . '/' . DIRLINKS;
-			echo 'refiste:',REF_SITE ;
 			if (REF_SITE != '') {
 				$dirref = CORPUS_SITE . $corpus['Dirname'] . '/' . DIRREF;
 				$refsite = REF_SITE;
 				`cp $dirref/*.html $refsite/.`;
 			}
 			
-			$corpuslinks = select_files($dirpath,'/\.xml$/');
-			$linksarray = array_merge($linksarray,$corpuslinks);
+			//$corpuslinks = select_files($dirpath,'/\.xml$/');
+			$corpuslinks = $dirpath . '/*.xml';
+			//$linksarray = array_merge($linksarray,$corpuslinks);
+			$linksarray[] = $corpuslinks;
 		}
 		$linksfiles = implode(' ',$linksarray);
 		$command = RACINE_SITE . 'pl/cree_corpus_cwb.pl ' . $colname . ' ' . $collection['sr'] . ' ' . $collection['tr']. ' ' . $linksfiles;
-		//echo 'Commande : ',$command;
-		$process = new Process($command);
-		$process->start();
-		$generatePid = $process->getPid();
+	//	echo 'Commande : ',$command;
+$generatePid = `nohup $command > /dev/null 2>&1 & echo $!`;
+//echo $generatePid;
 	}
 
 # modifierCollection

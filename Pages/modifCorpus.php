@@ -79,6 +79,11 @@
 			fwrite($fh, $html);
 			fclose($fh);
 		}
+		if (REF_SITE != '') {
+                    $dirref = CORPUS_SITE . $Params['Dirname'] . '/' . DIRREF;
+                    $refsite = REF_SITE;
+                    `cp $dirref/*.html $refsite/.`;
+                }
 	}
 
 	
