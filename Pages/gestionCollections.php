@@ -65,14 +65,14 @@
 				`cp $dirref/*.html $refsite/.`;
 			}
 			
-			//$corpuslinks = select_files($dirpath,'/\.xml$/');
-			$corpuslinks = $dirpath . '/*.xml';
-			//$linksarray = array_merge($linksarray,$corpuslinks);
-			$linksarray[] = $corpuslinks;
+			$corpuslinks = select_files($dirpath,'/\.xml$/');
+			//$corpuslinks = $dirpath . '/*.xml';
+			$linksarray = array_merge($linksarray,$corpuslinks);
+			//$linksarray[] = $corpuslinks;
 		}
 		$linksfiles = implode(' ',$linksarray);
 		$command = RACINE_SITE . 'pl/cree_corpus_cwb.pl ' . $colname . ' ' . $collection['sr'] . ' ' . $collection['tr']. ' ' . $linksfiles;
-	//	echo 'Commande : ',$command;
+		//echo 'Commande : ',$command;
 $generatePid = `nohup $command > /dev/null 2>&1 & echo $!`;
 //echo $generatePid;
 	}
