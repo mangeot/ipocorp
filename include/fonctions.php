@@ -263,9 +263,12 @@
 # fonction récursive pour récupérer des fichers
 function select_files ($dir, $criteria) {
 	$res = array();
+//	echo 'dir:',$dir;
 	if (is_dir($dir) && $dh = opendir($dir)) {
 		while (($file = readdir($dh)) !== false) {
 			$filepath = $dir . '/'.$file;
+//			echo 'fp:',$filepath;
+//			echo 'preg_match?',$criteria,'<>',$file;
 			if (is_file($filepath) && preg_match($criteria,$file)) {
 				$res[] = $filepath;
 			}

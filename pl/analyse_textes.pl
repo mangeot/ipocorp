@@ -9,44 +9,63 @@ use File::Copy;
 my $uplug = '/usr/local/bin/uplug'; 
 my $tmpdir = tempdir( CLEANUP => 1 );
 
-if (@ARGV< 1) {die 'usage: analyse_textes.pl lang lg directory'};
-my $lang    = $ARGV[0];  # source language
-my $lg    = $ARGV[1];  # source language
-my $workdir = $ARGV[2];
+if (@ARGV< 1) {die 'usage: analyse_textes.pl lang lg directory_or_files'};
+my $lang    = shift(@ARGV);  # source language
+my $lg    = shift(@ARGV);  # source language
+my @workdirs = @ARGV;
 my $xmldir = 'XML';
 my $txtdir= 'TXT';
 
+my $workdir = $workdirs[0];
+chomp($workdir);
 
-$workdir =~ s/([^\/])$/$1\//;
-
-my $srcd = $workdir . $txtdir . '/' . $lang .'/';
-my $anad = $workdir . $xmldir . '/' . $lang .'/';
-
-
-&analyse_textes($srcd,$anad);
+if (-d $workdir) {
+	$workdir =~ s/([^\/])$/$1\//;
+	my $srcd = $workdir . $txtdir . '/' . $lang .'/';
+	&analyse_textes($srcd,$lg);
+}
+elsif (-f $workdir) {
+	foreach my $fichier (@workdirs) {
+		$fichier =~ /\/([^\/]+)$/;
+		my $nomfichier = $1;
+		analyse_fichier($fichier,$nomfichier,$lg);
+	}
+}
 
 sub analyse_textes {
 	my $srcdir = $_[0];
-	my $trgdir = $_[1];
+	my $lb = $_[1];
 	print STDERR "analysis of dir '$srcdir'\n";
 	my @LS = `ls -a '$srcdir'`;
 	foreach my $file (@LS) {
 	  chomp $file;
 	  my $infile = $srcdir . $file;
-	  my $analysisfile = $trgdir . $file;
 	  if ($file =~ /\.txt$/ && $file !~ /^\./) {
-		`mkdir -p '$trgdir'`;
-		$analysisfile =~ s/\.txt/\.xml/;
-		$file =~ s/\.txt/\.xml/;
-		print STDERR "Analysis of '$infile' to '$analysisfile'\n";
-		`$uplug pre/$lg\-all -in '$infile' -out '$analysisfile'`;
-		print STDERR "Add text id in $analysisfile\n";
-		&ajoute_texte_id($analysisfile, $file);
+		&analyse_fichier($infile,$file, $lb);
 	  }
 	  elsif ($file !~ /^\./ && -d $infile) {
-	  		&analyse_textes($infile . '/', $analysisfile . '/');
+	  		&analyse_textes($infile . '/',$lb);
 	  }
 	}
+}
+
+sub analyse_fichier {
+	my $srcfile = $_[0];
+	my $filename = $_[1];
+	my $la = $_[2];
+	chomp($srcfile);
+	chomp($filename);
+	my $outfile = $srcfile;
+	$outfile =~ s%/TXT/%/XML/%;
+	my $outdir = $outfile;
+	$outdir =~ s%[^/]+$%%;
+	`mkdir -p '$outdir'`;
+	$outfile =~ s/\.txt$/\.xml/;
+	$filename =~ s/\.txt$/\.xml/;
+	print STDERR "Analysis of '$srcfile' to '$outfile'\n";
+	`$uplug pre/$la\-all -in '$srcfile' -out '$outfile'`;
+	print STDERR "Add text id in $outfile\n";
+	&ajoute_texte_id($outfile, $filename);
 }
 
 sub ajoute_texte_id {

@@ -30,10 +30,42 @@
 			exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $Params['Target'] . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . " > /dev/null 2>> $logFile &");
 		}
 	}
+	if (!empty($_REQUEST['TextsAnalysis']) && $modif) {
+	// TODO supprimer le logFile qd c'est terminé => avec un cron
+		$logFile = tempnam(RACINE_SITE . 'data', 'analysis');
+		$ongoing_analysis = 1;
+		//echo 'analyse de ',$_REQUEST['textfiles'][0];
+		foreach ($_REQUEST['textfiles'] as $textfile) {
+			$fichiers = select_files(CORPUS_SITE . $_REQUEST['Dirname'],'/'.preg_quote($textfile).'/');
+			foreach ($fichiers as $fichier) {
+				if (preg_match('%/TXT/([a-z][a-z][a-z])/%',$fichier,$matches)) {
+					$lang = $matches[1];
+					$lg = $ISO6392TO1[$lang];
+					//echo RACINE_SITE . 'pl/analyse_textes.pl ' . $lang . ' ' . $lg . ' ' . $fichier;
+					exec(RACINE_SITE . 'pl/analyse_textes.pl ' . $lang . ' ' . $lg . ' ' . $fichier. " > /dev/null 2> $logFile &");
+				}
+			}
+		}
+	}
 	if (!empty($_REQUEST['Alignment']) && !empty($Params['Target']) && $modif) {
 		$logFile = tempnam(RACINE_SITE . 'data', 'alignment');
 		$ongoing_analysis = 1;
 		exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Source'] . ' ' . $Params['Target'] . ' ' . $sr . ' ' . $tr . ' ' . CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML. " > /dev/null 2> $logFile &");
+	}
+	if (!empty($_REQUEST['TextsAlignment']) && $modif) {
+	// TODO supprimer le logFile qd c'est terminé => avec un cron
+		$logFile = tempnam(RACINE_SITE . 'data', 'alignment');
+		$ongoing_analysis = 1;
+		//echo 'analyse de ',$_REQUEST['textfiles'][0];
+		foreach ($_REQUEST['xmlfiles'] as $textfile) {
+			$fichiers = select_files(CORPUS_SITE . $_REQUEST['Dirname'],'/'.preg_quote($textfile).'/');
+			foreach ($fichiers as $fichier) {
+				if (preg_match('%/XML/([a-z][a-z][a-z])/%',$fichier,$matches)) {
+					//echo 'aligne:',$fichier;
+					exec(RACINE_SITE . 'pl/aligne_textes.pl ' . $Params['Source'] . ' ' . $Params['Target'] . ' ' . $sr . ' ' . $tr . ' ' . $fichier . " > /dev/null 2> $logFile &");
+				}
+			}
+		}
 	}
 	
 	function affichep ($param, $default='') {
@@ -107,14 +139,22 @@
  ?>
 </section>
 <section>
+<form action="?" method="post">
 <pre>
 <?php
 $dir =  CORPUS_SITE . $Params['Dirname'];
 $command = TREE_COMMAND . ' '. $dir;
 $tree = `$command`; 
+$tree = preg_replace('/\-\- *(.+\.txt)/','-- $1<input type="checkbox" name="textfiles[]" value="$1" />',$tree);
+$tree = preg_replace('/\-\- *(.+\.xml)/','-- $1<input type="checkbox" name="xmlfiles[]" value="$1" />',$tree);
 echo $tree;
 ?>
 </pre>
+<input type="hidden" name="Dirname" value="<?php echo $Params['Dirname']; ?>" />
+<input type="hidden" name="Name" value="<?php echo $Params['Name']; ?>" />
+<p><input type="submit" name="TextsAnalysis" value="<?php echo gettext('Analyser les textes')?>" /></p>
+<p><input type="submit" name="TextsAlignment" value="<?php echo gettext('Aligner les textes')?>" /></p>
+</form>
 </section>
 <?php 
 $footerMenu = ' | <a href="modifCorpus.php?Consulter=on&Dirname='.$Params['Dirname'].'&Name='.$Params['Name'].'">Corpus</a>';
