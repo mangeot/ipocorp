@@ -275,7 +275,8 @@ $generatePid = `nohup $command > /dev/null 2>&1 & echo $!`;
 ?>
 		</tbody>
 	</table>
-	<p>Attention, l'indexation des corpus CWB ne marche pas si les fichiers de lien utilisent des ' à la place des " pour délimiter les attributs !!!</p>
+	<p>Attention, l'indexation des corpus CWB ne marche pas si les fichiers de lien cesAlign utilisent des ' à la place des " pour délimiter les attributs !!!
+	Il faut également que chaque link soit sur une ligne différente.</p>
 		<p style="text-align:center;"><a href="gestionCollections.php?CreerCollection=on"><img src="<?php echo RACINE_WEB;?>images/assets/b_new.png"/>
 	<?php echo gettext('Ajout d\'une collection');?></a></p>
 </section>
