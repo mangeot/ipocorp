@@ -145,6 +145,7 @@
 		$doc = new DOMDocument();
 		$doc->load($collection);
 		$corpora = $doc->getElementsByTagName("collection-metadata");
+		if ($corpora->length>0) {
 		$corp = $corpora->item(0);
   		$infos['Name'] = $corp->getAttribute('name');
   		$infos['CreationDate'] = $corp->getAttribute('creation-date');
@@ -165,6 +166,7 @@
   		$infos['Target'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('d:lang');
   		$infos['sr'] = $ISO6392TO1[$infos['Source']];
   		$infos['tr'] = $ISO6392TO1[$infos['Target']];
+		}
 		return($infos);
 	}
 	
@@ -201,7 +203,7 @@
 		if ($dh = opendir($collectiondir)) {
 			while (($file = readdir($dh)) !== false) {
 				$metafile = $collectiondir . '/'.$file;
-				if (is_file($metafile) && preg_match('/-metadata.xml$/',$file)) {
+				if (is_file($metafile) && preg_match('/^[^\.][^\/]+\-metadata.xml$/',$file)) {
 					$infos = parseCollection($metafile);
 					$infos['Dirname']= $metafile;
 					$collections[$infos['Name']] = $infos;
