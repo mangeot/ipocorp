@@ -20,12 +20,13 @@
    name="'.$params['Name'].'" 
    owner="'.$params['Owner'].'"
    pairs="'.$params['Pairs'].'"
+   pairfiles="'.$params['PairFiles'].'"
    type="'.$params['Type'].'"> 
  <languages>
- 	 <source-language texts="'.$params['SourceTexts'].'"  words="'.$params['SourceWords'].'" sentences="'.$params['SourceSentences'].'" d:lang="'.$params['Source'].'"/>
+ 	 <source-language texts="'.$params['SourceTexts'].'" xml="'.$params['SourceXml'].'"  words="'.$params['SourceWords'].'" sentences="'.$params['SourceSentences'].'" d:lang="'.$params['Source'].'"/>
 ';
  	if (!empty($params['Target'])) {
- 		$res .= ' 	 <target-language texts="'.$params['TargetTexts'].'" words="'.$params['TargetWords'].'" sentences="'.$params['TargetSentences'].'"  d:lang="'.$params['Target'].'"/>
+ 		$res .= ' 	 <target-language texts="'.$params['TargetTexts'].'" xml="'.$params['TargetXml'].'" words="'.$params['TargetWords'].'" sentences="'.$params['TargetSentences'].'"  d:lang="'.$params['Target'].'"/>
 ';
  	}
  	$res .=' </languages>
@@ -66,6 +67,7 @@
   		$infos['Category'] = $corp->getAttribute('category');
   		$infos['Type'] = $corp->getAttribute('type');
   		$infos['Pairs'] = $corp->getAttribute('pairs');
+  		$infos['PairFiles'] = $corp->getAttribute('pairfiles');
   		$infos['Contents'] = $corp->getElementsByTagName('contents')->item(0)->nodeValue;
   		$infos['Domain'] = $corp->getElementsByTagName('domain')->item(0)->nodeValue;
   		if (empty($infos['Domain'])) {echo 'domaine vide : ',$dico;}
@@ -89,10 +91,12 @@
 		$infos['Administrators'] = join(',',$admins); 
   		$infos['Source'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('d:lang');
   		$infos['SourceTexts'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('texts');
+  		$infos['SourceXml'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('xml');
   		$infos['SourceWords'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('words');
   		$infos['SourceSentences'] = $corp->getElementsByTagName('source-language')->item(0)->getAttribute('sentences');
   		$infos['Target'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('d:lang');
   		$infos['TargetTexts'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('texts');
+  		$infos['TargetXml'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('xml');
   		$infos['TargetWords'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('words');
   		$infos['TargetSentences'] = $corp->getElementsByTagName('target-language')->item(0)->getAttribute('sentences');
 		return($infos);

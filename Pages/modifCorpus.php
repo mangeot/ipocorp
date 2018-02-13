@@ -1,5 +1,6 @@
 <?php
 	require_once('../init.php');
+	$user = !empty($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:DEFAULT_TEST_USER;
 	$metadataFile = '';
 	if (!empty($_REQUEST['Dirname']) && !empty($_REQUEST['Name'])) {
 		if (!empty($_REQUEST['ManageTexts'])) {
@@ -15,12 +16,21 @@
   	}
 	else {
 		$Params = $_REQUEST;
+		if (empty($Params['Administrators'])) {
+			$Params['Administrators'] = $user;
+		}
 		$Params['AdministratorArray'] = preg_split("/[\s,;]+/", $Params['Administrators']);
 		if (empty($Params['Pairs'])) {
 			$Params['Pairs'] = 0;
 		}
+		if (empty($Params['PairFiles'])) {
+			$Params['PairFiles'] = 0;
+		}
 		if (empty($Params['SourceTexts'])) {
 			$Params['SourceTexts'] = 0;
+		}
+		if (empty($Params['SourceXml'])) {
+			$Params['SourceXml'] = 0;
 		}
 		if (empty($Params['SourceWords'])) {
 			$Params['SourceWords'] = 0;
@@ -30,6 +40,9 @@
 		}
 		if (empty($Params['TargetTexts'])) {
 			$Params['TargetTexts'] = 0;
+		}
+		if (empty($Params['TargetXml'])) {
+			$Params['TargetXml'] = 0;
 		}
 		if (empty($Params['TargetWords'])) {
 			$Params['TargetWords'] = 0;
@@ -49,9 +62,11 @@
 	else if (!empty($_REQUEST['CompterPhrases'])) {
 		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
 		$dirsrc = $dirxml . '/' . $Params['Source'];
+		$Params['SourceXml'] = trim(`ls -1 $dirsrc/* | grep '.xml' | wc -l`);
 		$Params['SourceWords'] = trim(`grep -R '<w ' $dirsrc/* | wc -l`);
 		$Params['SourceSentences'] = trim(`grep -R '<s ' $dirsrc/* | wc -l`);		
 		$dirtrg = $dirxml . '/' . $Params['Target'];		
+		$Params['TargetXml'] = trim(`ls -1 $dirtrg/* | grep '.xml' | wc -l`);
 		$Params['TargetWords'] = trim(`grep -R '<w ' $dirtrg/* | wc -l`);
 		$Params['TargetSentences'] = trim(`grep -R '<s ' $dirtrg/* | wc -l`);
 	}	
@@ -59,6 +74,7 @@
 		$dirxml = CORPUS_SITE . $Params['Dirname'] . '/' . DIRXML;
 		$dirlinks = $dirxml . '/' . DIRLINKS;
 		$Params['Pairs'] = trim(`grep -R '<link ' $dirlinks/* | wc -l`);
+		$Params['PairFiles'] = trim(`ls -1 $dirlinks/* | grep '.xml' | wc -l`);
 	}
 	else if (!empty($_REQUEST['GenererReferences'])) {
 		$htmlhead = '<html><head><meta charset="UTF-8" /><title>Référence bibliographique</title></head><body>';
@@ -163,6 +179,14 @@
 		<input type="submit" name="CompterTextes" value="<?php echo gettext('Recompter'); ?>" />
 	</p>
 	<?php } ?>
+	<p><?php echo gettext('Xml source'),gettext(' : ');?>
+		<input type="text" name="SourceXml" value="<?php echo $Params['SourceXml']; ?>" />
+	</p>
+	<?php if (!empty($Params['Category']) && $Params['Category'] !== 'monolingual') { ?>
+	<p><?php echo gettext('Xml cible'),gettext(' : ');?>
+		<input type="text" name="TargetXml" value="<?php echo $Params['TargetXml']; ?>" />
+	</p>
+	<?php } ?>
 	<p><?php echo gettext('Mots source'),gettext(' : ');?>
 		<input type="text" name="SourceWords" value="<?php echo $Params['SourceWords']; ?>" />
 	</p>
@@ -179,6 +203,8 @@
 		<input type="text" name="TargetSentences" value="<?php echo $Params['TargetSentences']; ?>" />
 		<input type="submit" name="CompterPhrases" value="<?php echo gettext('Recompter'); ?>" />
 	</p>
+	<p><?php echo gettext('Textes alignés'),gettext(' : ');?>
+		<input type="text" name="PairFiles" value="<?php echo $Params['PairFiles']; ?>" />
 	<p><?php echo gettext('Phrases alignées'),gettext(' : ');?>
 		<input type="text" name="Pairs" value="<?php echo $Params['Pairs']; ?>" />
 		<input type="submit" name="CompterLiens" value="<?php echo gettext('Recompter'); ?>" />
