@@ -81,7 +81,6 @@
 		$htmlfoot = '</body></html>';
 
 		$dirref = CORPUS_SITE . $Params['Dirname'] . '/' . DIRREF . '/';
-		`mkdir -p $dirref`;
 		$dirsrc = CORPUS_SITE . $Params['Dirname'] . '/' . DIRTXT . '/' . $Params['Source'];
 		$filenames = select_files($dirsrc,'/\.txt$/');
 		
@@ -293,6 +292,7 @@
 				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.$params['Target']);
 				@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRXML.'/'.DIRLINKS);
 			}
+			@mkdir(CORPUS_SITE.'/'.$dirname.'/'.DIRREF);
 		}
 		if (!empty($params['Access'])) {
 			if ($params['Access'] == 'public') {
