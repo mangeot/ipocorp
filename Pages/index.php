@@ -129,17 +129,17 @@
 		}
 		echo '</td><td>',$motssource,'-',$motscible,'</td><td>',$liens,'</td><td>';
 		if (in_array($user, $collection['Administrators'])) {
-			echo '<a title="Éditer" href="gestionCollections.php?ModifierCollection=on&CollectionName=',$collection['Name'],'"><img style="border:none;" src="',RACINE_WEB,'images/assets/b_edit.png" alt="Éditer"/></a>';
+			echo '<a title="Éditer" href="gestionCollections.php?ModifierCollection=on&Name=',$collection['Name'],'"><img style="border:none;" src="',RACINE_WEB,'images/assets/b_edit.png" alt="Éditer"/></a>';
 		}
 		else {
 			echo '<a title="Consulter" href="gestionCollections.php?Consulter=on&Name=',$collection['Name'],'"><img  style="border:none;" width="20" src="',RACINE_WEB,'images/assets/b_update.png" alt="Consulter"/></a>';
 		}
 		echo '</td>';
 		if (in_array($user, $collection['Administrators'])) {
-			echo '<td><a title="Générer" href="gestionCollections.php?GenererCollection=on&CollectionName=',$collection['Name'],'"><img style="border:none;" width="20" src="',RACINE_WEB,'images/assets/b_generate.png" alt="Générer"/></a></td>';
+			echo '<td><a title="Générer" href="gestionCollections.php?GenererCollection=on&Name=',$collection['Name'],'"><img style="border:none;" width="20" src="',RACINE_WEB,'images/assets/b_generate.png" alt="Générer"/></a></td>';
 		}
 		echo '<td><a title="Ouvrir" href="',CORPUS_DAV,'/',DIRCOLLECTIONS,'"><img style="border:none;" width="20" src="',RACINE_WEB,'images/assets/b_send.png" alt="Ouvrir"/></a></td>';
-		echo '<td><a title="Supprimer" href="gestionCollections.php?SupprimerCollection=on&CollectionName=',$collection['Name'],'"><img style="border:none;" width="20" src="',RACINE_WEB,'images/assets/b_delete.png" alt="Supprimer"/></a></td>';
+		echo '<td><a title="Supprimer" href="gestionCollections.php?SupprimerCollection=on&Name=',$collection['Name'],'"><img style="border:none;" width="20" src="',RACINE_WEB,'images/assets/b_delete.png" alt="Supprimer"/></a></td>';
 
 		echo '</tr>';
 		$i++;
