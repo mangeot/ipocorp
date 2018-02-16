@@ -275,8 +275,13 @@ $generatePid = `nohup $command > /dev/null 2>&1 & echo $!`;
 ?>
 		</tbody>
 	</table>
-	<p>Attention, l'indexation des corpus CWB ne marche pas si les fichiers de lien cesAlign utilisent des ' à la place des " pour délimiter les attributs !!!
-	Il faut également que chaque link soit sur une ligne différente.</p>
+	<p>Attention, si vous manipulez les fichiers d'alignement &lt;cesAlign>, pour que l'indexation fonctionne, il faut respecter les consignes suivantes : <ul>
+	<li>Les valeurs d'attribut doivent être délimités par des " et non des '.</li>
+	<li>Chaque &lt;link doit être sur une ligne différente.</li>
+	<li>Les numéros des identifiants des phrases sources &lt;s id="sxxxx" doivent avoir un ordre croissant.</li>
+	<li>Dans le fichier source, les phrases &lt;s> doivent suivre l'ordre des &lt;link, les mots &lt;w doivent être chacun sur une ligne et l'encodage doit être indiqué même pour UTF-8</li>
+	</ul>
+	</p>
 		<p style="text-align:center;"><a href="gestionCollections.php?CreerCollection=on"><img src="<?php echo RACINE_WEB;?>images/assets/b_new.png"/>
 	<?php echo gettext('Ajout d\'une collection');?></a></p>
 </section>
