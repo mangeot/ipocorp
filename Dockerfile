@@ -81,9 +81,14 @@ RUN	aclocal && autoconf && automake -a && ./configure && make && make install
 # install mecab
 RUN git clone https://github.com/taku910/mecab.git
 	
-WORKDIR mecab
+WORKDIR mecab/mecab
 
 RUN ./configure && make && make install && ldconfig
+
+WORKDIR mecab/mecab-ipadic
+
+RUN ./configure && make && make install
+
 
 # install uplug
 RUN git clone https://bitbucket.org/tiedemann/uplug.git
